@@ -457,7 +457,36 @@ namespace GPL
         #endregion string extensions
 
         #region this IEnumerable<T>
+        /// <summary>
+        /// Reads a file line by line expecifying the character used as line feed.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="delimiter">The delimiter.</param>
+        /// <returns></returns>
+        /// <example>
+        /// using (StreamReader sr = new StreamReader(FileName, Encoding.Default))
+        /// {
+        ///     foreach (var line in sr.ReadLines ('\n'))
+        ///           Console.WriteLine (line);
+        ///}
+        /// </example>
+        public static IEnumerable<string> ReadLines(this TextReader reader, char delimiter)
+        {
+            List<char> chars = new List<char>();
+            while (reader.Peek() >= 0)
+            {
+                char c = (char)reader.Read();
 
+                if (c == delimiter)
+                {
+                    yield return new String(chars.ToArray());
+                    chars.Clear();
+                    continue;
+                }
+
+                chars.Add(c);
+            }
+        }
         public static void Each<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
             foreach (T item in enumerable)
