@@ -458,17 +458,20 @@ namespace GPL
 
         #region this IEnumerable<T>
         /// <summary>
-        /// Reads a file line by line expecifying the character used as line feed.
+        /// Reads a TextReader line by line expecifying the character used as line feed.
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="delimiter">The delimiter.</param>
         /// <returns></returns>
         /// <example>
+        /// This sample shows how to call the <see cref="ReadLines"/> method.
+        /// <code>
         /// using (StreamReader sr = new StreamReader(FileName, Encoding.Default))
         /// {
         ///     foreach (var line in sr.ReadLines ('\n'))
         ///           Console.WriteLine (line);
         ///}
+        /// </code>
         /// </example>
         public static IEnumerable<string> ReadLines(this TextReader reader, char delimiter)
         {
