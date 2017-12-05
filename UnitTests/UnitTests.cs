@@ -70,5 +70,37 @@ namespace GPL.UnitTests
 
 
         }
+
+        [TestMethod]
+        public void T002_Extensions_CreateDirectory()
+        {
+            string a = @"C:\temp\dir1";
+            string b = @"C:\temp\dir1\dir2\dir3";
+
+            //string a = @"\\App.Diablo.Corelogic.com\LTL\TEST\RPM Direct";
+            //string b = @"\\App.Diablo.Corelogic.com\LTL\TEST\RPM Direct\AKZA-7SNEPC\CountFiles";
+
+            var adi = new DirectoryInfo(a);
+            var bdi = new DirectoryInfo(b);
+
+            if (adi.Exists)
+            {
+                adi.Delete(true);
+                adi.Refresh();
+            }
+
+            Assert.IsFalse(bdi.Exists);
+
+            bdi.CreateDirectory();
+
+            // Refresh the DirectoryInfo
+            bdi.Refresh();
+            adi.Refresh();
+
+            Assert.IsTrue(bdi.Exists);
+
+            if (adi.Exists)
+                adi.Delete(true);
+        }
     }
 }
