@@ -4,6 +4,7 @@ using GPL;
 using System.IO;
 using System.Data;
 using System.Text;
+using System.Collections.Generic;
 
 namespace GPL.UnitTests
 {
@@ -101,6 +102,26 @@ namespace GPL.UnitTests
 
             if (adi.Exists)
                 adi.Delete(true);
+        }
+
+        [TestMethod]
+        public void T003_Extensions_ToCSV()
+        {
+            List<string> L = new List<string>();
+
+            L.Add("A");
+            L.Add("B");
+            L.Add("C");
+            L.Add("D");
+
+            var R = L.ToCSV();
+
+            Assert.AreEqual("A,B,C,D", R);
+
+            // Test the overload.
+            R = L.ToCSV('|'); // pasing optional parameter separator.
+
+            Assert.AreEqual("A|B|C|D", R);
         }
     }
 }
