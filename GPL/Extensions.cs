@@ -854,7 +854,7 @@ namespace GPL
         public static List<string> ToCSV(this IDataReader dataReader, bool includeHeaderAsFirstRow, string separator)
         {
             // source: http://www.extensionmethod.net/2085/csharp/list-string/datareader-to-csv
-            // TODO Copy this method and replace the 'csvRows' for a method to write the sb.ToString() to a file.
+            // TODO Copy this method and replace the 'csvRows' for a method to write the sb.ToString() to a file..
             List<string> csvRows = new List<string>();
             StringBuilder sb = null;
 
