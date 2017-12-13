@@ -498,25 +498,20 @@ namespace GPL
             }
         }
 
-        public static string ToCSV<T>(this IEnumerable<T> instance, char separator)
+        /// <summary>
+        /// Get the CSV Comma Separated Value replesentation of this IEnumerable<T>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance">The instance.</param>
+        /// <param name="separator">The separator.</param>
+        /// <returns></returns>
+        public static string ToCSV<T>(this IEnumerable<T> instance, char separator = ',')
         {
             StringBuilder csv;
             if (instance != null && instance.Count() != 0)
             {
                 csv = new StringBuilder();
                 instance.Each(value => csv.AppendFormat("{0}{1}", value, separator));
-                return csv.ToString(0, csv.Length - 1);
-            }
-            return null;
-        }
-
-        public static string ToCSV<T>(this IEnumerable<T> instance)
-        {
-            StringBuilder csv;
-            if (instance != null && instance.Count() != 0)
-            {
-                csv = new StringBuilder();
-                instance.Each(v => csv.AppendFormat("{0},", v));
                 return csv.ToString(0, csv.Length - 1);
             }
             return null;
