@@ -544,7 +544,8 @@ namespace GPL
                 // another method specially for that.
                 TypeConverter tc = TypeDescriptor.GetConverter(typeof(T));
                 result = (T)tc.ConvertFrom(value);
-            } return result;
+            }
+            return result;
         }
 
         public static bool In<T>(this T value, params T[] list)
@@ -845,66 +846,131 @@ namespace GPL
         #region IDataReader
 
         /// <summary>
-        /// DataReader to CSV.
+        /// Export the IDataReader to a delimited file.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
+        /// <param name="fileFullName">Full name of the file.</param>
+        /// <param name="append">if set to <c>true</c> [append].</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="bufferSize">Size of the buffer.</param>
         /// <param name="includeHeaderAsFirstRow">if set to <c>true</c> [include header as first row].</param>
-        /// <param name="separator">The separator.</param>
+        /// <param name="textQualifier">The text qualifier.</param>
+        /// <param name="rowDelimiter">The row delimiter.</param>
+        /// <param name="columnDelimiter">The column delimiter.</param>
         /// <returns></returns>
-        public static List<string> ToCSV(this IDataReader dataReader, bool includeHeaderAsFirstRow, string separator)
+        /// <exception cref="System.ArgumentException">
+        /// Arguments: rowDelimiter & columnDelimiter can not be null.
+        /// or
+        /// Arguments: textQualifier, columnDelimiter and rowDelimiter must have differents values.
+        /// </exception>
+        public static Int64 ToDelimitedFile(this IDataReader dataReader, string fileFullName, bool append, Encoding encoding, int bufferSize = 1024 * 8, bool includeHeaderAsFirstRow = true, string textQualifier = null, string rowDelimiter = "\r\n", string columnDelimiter = ",")
         {
-            // source: http://www.extensionmethod.net/2085/csharp/list-string/datareader-to-csv
-            // TODO Copy this method and replace the 'csvRows' for a method to write the sb.ToString() to a file..
-            List<string> csvRows = new List<string>();
-            StringBuilder sb = null;
+            // Original code: http://www.extensionmethod.net/2085/csharp/list-string/datareader-to-csv
 
-            if (includeHeaderAsFirstRow)
+            // rowDelimiter & columnDelimiter must be different to null.
+            if (string.IsNullOrEmpty(rowDelimiter) || string.IsNullOrEmpty(columnDelimiter))
+                throw new ArgumentException(@"Arguments: rowDelimiter & columnDelimiter can not be null.");
+
+            textQualifier = (string.IsNullOrEmpty(textQualifier) ? string.Empty : textQualifier);
+
+            // Validate input Arguments values.
+            if (textQualifier.Equals(columnDelimiter) || (textQualifier.Equals(rowDelimiter) || rowDelimiter.Equals(columnDelimiter)))
+                throw new ArgumentException(@"Arguments: textQualifier, columnDelimiter and rowDelimiter must have differents values.");
+
+            Int64 rowsExported = 0;
+
+            bool textQualifierIsDoubleCuoteOrEmpty = (textQualifier == "\"" || textQualifier == string.Empty) ? true : false;
+
+            bool textQualifierIsNullOrEmpty = (string.IsNullOrEmpty(textQualifier)) ? true : false;
+
+            using (StreamWriter outfile = new StreamWriter(fileFullName, append, encoding, bufferSize))
             {
-                sb = new StringBuilder();
-                for (int index = 0; index < dataReader.FieldCount; index++)
-                {
-                    if (dataReader.GetName(index) != null)
-                        sb.Append(dataReader.GetName(index));
+                StringBuilder sb = null;
+                bool ValueAlreadyEnclosed;
 
-                    if (index < dataReader.FieldCount - 1)
-                        sb.Append(separator);
-                }
-                csvRows.Add(sb.ToString());
-            }
-
-            while (dataReader.Read())
-            {
-                sb = new StringBuilder();
-                for (int index = 0; index < dataReader.FieldCount - 1; index++)
+                if (includeHeaderAsFirstRow)
                 {
-                    if (!dataReader.IsDBNull(index))
+                    sb = new StringBuilder();
+                    for (int index = 0; index < dataReader.FieldCount; index++)
                     {
-                        string value = dataReader.GetValue(index).ToString();
-                        if (dataReader.GetFieldType(index) == typeof(String))
+                        if (dataReader.GetName(index) != null)
                         {
-                            //If double quotes are used in value, ensure each are replaced but 2.
-                            if (value.IndexOf("\"") >= 0)
-                                value = value.Replace("\"", "\"\"");
+                            string value = dataReader.GetName(index);
 
-                            //If separtor are is in value, ensure it is put in double quotes.
-                            if (value.IndexOf(separator) >= 0)
-                                value = "\"" + value + "\"";
+                            ValueAlreadyEnclosed = false;
+
+                            if (textQualifierIsDoubleCuoteOrEmpty)
+                            {
+                                //If double quotes are used in value, ensure each are replaced but 2.
+                                if (value.IndexOf("\"") >= 0)
+                                    value = value.Replace("\"", "\"\"");
+
+                                //If columnDelimiter is in value, ensure it is put in double quotes.
+                                if (value.IndexOf(columnDelimiter) >= 0)
+                                {
+                                    value = "\"" + value + "\"";
+                                    ValueAlreadyEnclosed = true;
+                                }
+                            }
+                            // Apply the textQualifier to the value if it is supplied.
+                            if (!ValueAlreadyEnclosed)
+                                value = textQualifier + value + textQualifier;
+
+                            sb.Append(value);
                         }
-                        sb.Append(value);
+                        if (index < dataReader.FieldCount - 1)
+                            sb.Append(columnDelimiter);
+                    }
+                    outfile.Write(sb + rowDelimiter);
+                }
+
+                while (dataReader.Read())
+                {
+                    sb = new StringBuilder();
+                    for (int index = 0; index < dataReader.FieldCount - 1; index++)
+                    {
+                        if (!dataReader.IsDBNull(index))
+                        {
+                            string value = dataReader.GetValue(index).ToString();
+                            //if (dataReader.GetFieldType(index) == typeof(String))
+                            {
+                                ValueAlreadyEnclosed = false;
+
+                                if (textQualifierIsDoubleCuoteOrEmpty)
+                                {
+                                    //If double quotes are used in value, ensure each are replaced but 2.
+                                    if (value.IndexOf("\"") >= 0)
+                                        value = value.Replace("\"", "\"\"");
+
+                                    //If columnDelimiter is in value, ensure it is put in double quotes.
+                                    if (value.IndexOf(columnDelimiter) >= 0)
+                                    {
+                                        value = "\"" + value + "\"";
+                                        ValueAlreadyEnclosed = true;
+                                    }
+                                }
+                                // Apply the textQualifier to the value if it is supplied.
+                                if (!ValueAlreadyEnclosed)
+                                    value = textQualifier + value + textQualifier;
+                            }
+                            sb.Append(value);
+                        }
+
+                        if (index < dataReader.FieldCount - 1)
+                            sb.Append(columnDelimiter);
                     }
 
-                    if (index < dataReader.FieldCount - 1)
-                        sb.Append(separator);
+                    if (!dataReader.IsDBNull(dataReader.FieldCount - 1))
+                        sb.Append(dataReader.GetValue(dataReader.FieldCount - 1).ToString().Replace(columnDelimiter, " "));
+
+                    outfile.Write(sb + rowDelimiter);
+                    rowsExported++;
                 }
+                dataReader.Close();
 
-                if (!dataReader.IsDBNull(dataReader.FieldCount - 1))
-                    sb.Append(dataReader.GetValue(dataReader.FieldCount - 1).ToString().Replace(separator, " "));
-
-                csvRows.Add(sb.ToString());
+                sb = null;
             }
-            dataReader.Close();
-            sb = null;
-            return csvRows;
+            return rowsExported;
         }
 
         #endregion IDataReader
