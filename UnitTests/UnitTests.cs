@@ -129,55 +129,73 @@ namespace GPL.UnitTests
         [TestMethod]
         public void T004_Extensions_IDataReader_ToDelimitedFile()
         {
-            // Create the reader.
-            const String SQL_TEST_CONNECTIONSTRING = @"Data Source=EDGQN1PDDMSQL06;Initial Catalog=Temporary;Integrated Security=true;";
-            const String SQLOLEDB_TEST_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=EDGQN1PDDMSQL06;Initial Catalog=Temporary;Integrated Security=SSPI;";
+            // Create the connection strings.
+            
+            // XX sec
             const String SQL_PROD_CONNECTIONSTRING = @"Data Source=EDGQN1CPDMSQL09;Initial Catalog=Temporary;Integrated Security=true;";
+
+            // XX sec
             const String SQLOLEDB_PROD_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=EDGQN1CPDMSQL09;Initial Catalog=Temporary;Integrated Security=SSPI;";
 
+            // 21 sec
+            //const string ODBCSQLServer = "Driver={SQL Server};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection = Yes; ";
+
+            // 22 sec
+            //const string ODBCSQLServer = "Driver={ODBC Driver 13 for SQL Server};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
+
+            // 19 sec
+            const string ODBCSQLServer = "Driver={SQL Server Native Client 11.0};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
+
+            const long RowsToRead = 100000;
+
+            string CmdText = "select top " + RowsToRead.ToString() + " * from[Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]";
+
+            const int BufferSize = 1024 * 4;
+
+            const string TestFile = "c:\\temp\\test.csv";
+
+            //var Provider = DBHelper.Providers.OleDB;   // 12 sec
+            var Provider = DBHelper.Providers.SqlServer; // 08 sec
+            //var Provider = DBHelper.Providers.ODBC; // 20 sec
+
+            string Cnstring = string.Empty;
+
+            switch (Provider)
+            {
+                case DBHelper.Providers.SqlServer:
+                    Cnstring = SQL_PROD_CONNECTIONSTRING;
+                    break;
+                case DBHelper.Providers.OleDB:
+                    Cnstring = SQLOLEDB_PROD_CONNECTIONSTRING;
+                    break;
+                case DBHelper.Providers.ODBC:
+                    Cnstring = ODBCSQLServer;
+                    break;
+                case DBHelper.Providers.Oracle:
+                    break;
+                default:
+                    break;
+            }
+
+            long FileRows = 0;
+
             // create a connection object
-            //var conn = new SqlConnection(SQL_TEST_CONNECTIONSTRING);
-            var conn = new SqlConnection(SQL_PROD_CONNECTIONSTRING);
-            //var conn = new OleDbConnection(SQLOLEDB_TEST_CONNECTIONSTRING);
-            //var conn = new OleDbConnection(SQLOLEDB_PROD_CONNECTIONSTRING);
+            using (var dbh = new DBHelper(false))
+            {
+                dbh.CreateDBObjects(Cnstring, Provider, null);
 
-            // create a command object
-            var cmd = new SqlCommand("select 'mar,cos\"iturri|beitia' as [Tes,tCo\"lu|mn], * from [Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]", conn);
-            //var cmd = new OleDbCommand("select 'mar,cos\"iturri|beitia' as [Tes,tCo\"lu|mn], * from [Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]", conn);
+                var rdr = dbh.ExecuteReader(CmdText, CommandType.Text, ConnectionState.Open);
 
-            // open the connection
-            conn.Open();
+                FileRows = rdr.ToDelimitedFile(TestFile, false, Encoding.Default, BufferSize, true, columnDelimiter: "|");
 
-            // get an instance of the SqlDataReader
-            var rdr = cmd.ExecuteReader();
-
-
-            // export the reader 
-            string TestFile = "c:\\temp\\test.csv";
-            // CSV sample no textQualifier
-            //rdr.ToDelimitedFile(TestFile, false, Encoding.Default, 1024 * 8, true);
-
-            // CSV sample textQualifier = '"'
-            //rdr.ToDelimitedFile(TestFile, false, Encoding.Default, 1024 * 8, true,textQualifier: "\"");
-
-            // CSV sample textQualifier = '"'
-            //rdr.ToDelimitedFile(TestFile, false, Encoding.Default, 1024 * 8, true, columnDelimiter: "|");
-            //rdr.ToDelimitedFile(TestFile, false, Encoding.Default, 1024 * 8, true,textQualifier: "\"", columnDelimiter: "|");
-
-           Int64 rows =  rdr.ToDelimitedFile(TestFile, false, Encoding.Default, 1024 * 8, true, columnDelimiter: "|");
-
-
-            // open the connection
-            rdr.Close();
-
-            cmd.Dispose();
-
-            conn.Close();
-            conn.Dispose();
+            }
 
             var r = File.Exists(TestFile);
+
             Assert.IsInstanceOfType(r, typeof(bool));
             Assert.AreEqual(true, r);
+            Assert.AreEqual(RowsToRead, FileRows);
+
         }
     }
 }

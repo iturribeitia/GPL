@@ -863,7 +863,7 @@ namespace GPL
         /// or
         /// Arguments: textQualifier, columnDelimiter and rowDelimiter must have differents values.
         /// </exception>
-        public static Int64 ToDelimitedFile(this IDataReader dataReader, string fileFullName, bool append, Encoding encoding, int bufferSize = 1024 * 8, bool includeHeaderAsFirstRow = true, string textQualifier = null, string rowDelimiter = "\r\n", string columnDelimiter = ",")
+        public static long ToDelimitedFile(this IDataReader dataReader, string fileFullName, bool append, Encoding encoding, int bufferSize = 1024 * 4, bool includeHeaderAsFirstRow = true, string textQualifier = null, string rowDelimiter = "\r\n", string columnDelimiter = ",")
         {
             // Original code: http://www.extensionmethod.net/2085/csharp/list-string/datareader-to-csv
 
@@ -877,7 +877,7 @@ namespace GPL
             if (textQualifier.Equals(columnDelimiter) || (textQualifier.Equals(rowDelimiter) || rowDelimiter.Equals(columnDelimiter)))
                 throw new ArgumentException(@"Arguments: textQualifier, columnDelimiter and rowDelimiter must have differents values.");
 
-            Int64 rowsExported = 0;
+            long rowsExported = 0;
 
             bool textQualifierIsDoubleCuoteOrEmpty = (textQualifier == "\"" || textQualifier == string.Empty) ? true : false;
 
