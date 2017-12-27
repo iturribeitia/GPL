@@ -295,10 +295,13 @@ where TException : Exception
         /// This below example shows ow to invoke a method with parameters that returns void.
         /// Utility.RetryMethod(new Action<string, string, string, DatabaseManufacter, string, string, string, Int32, int, int>(DAHelper.DoSqlBulkCopy), 2, 500, scs, spn, tn, sdsmEnum, dcs, dpn, ftn, BulkRowsBuffer, BulkCommandTimeout, BulkBatchSize);
         /// 
-        /// This below example show how to create the delegated method to invoke  with parameters that returns int.
-        /// var newfuction = new Func<string, CommandType, ConnectionState,int>(dbh.ExecuteNonQuery); // You can define the delegate before or inside of the RetryMethod.
-        /// Utility.RetryMethod(new Func<string, CommandType, ConnectionState, int>(dbh.ExecuteNonQuery), 3, 5000, @"Refresh_Visit_From_Production", CommandType.StoredProcedure, ConnectionState.Open); // here the delegate was define inside.
-        /// 
+        /// A method that return a value.
+        /// You can define the delegate before or inside of the RetryMethod.
+        /// Before
+        /// Example with retries defining the delegate before and invoking in the Utility.RetryMethod note that the return type 'DataSet' is declared at the end, and the parameters types before.
+        /// var newfuction = new Func<string, CommandType, ConnectionState, DataSet>(dbh.GetDataSet);
+        /// Inside note that the return type is converted from the object return type to DataSet type.
+        /// DataSet rdr = (DataSet)Utility.RetryMethod(newfuction, 3, 3, CmdTextOK, CommandType.Text, ConnectionState.Open);
         /// </example>
         /// <param name="method">The method, It could be an Action or a Func, Action returns void Func return some object.</param>
         /// <param name="timesToRetry">The times to retry.</param>
@@ -612,7 +615,7 @@ where TException : Exception
             }
             return sb.ToString();
         }
-        
+
         /// <summary>
         /// Gets the file lines count.
         /// </summary>
