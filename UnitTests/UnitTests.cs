@@ -121,6 +121,26 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
+        public void T005_Utility_InvokeProcess()
+        {
+            //const string FileName = @"C:\Program Files\7-Zip\7zG.exe";
+            //const string Arguments = @"a -mx1 -tzip ""C:\Temp\test.ZIP""  ""C:\Temp\test.csv""";
+
+            const string FileName = @"cmd";
+            const string Arguments = @" /c " + "dir";
+
+            string r;
+
+            r = Utility.InvokeProcess(FileName, Arguments);
+            r = Utility.InvokeProcess(FileName, Arguments, true);
+            r = Utility.InvokeProcess(FileName, Arguments, true, false);
+            r = Utility.InvokeProcess(FileName, Arguments,true,false,System.Diagnostics.ProcessWindowStyle.Maximized,50000);
+
+            Assert.IsInstanceOfType(r, typeof(object));
+
+        }
+
+        [TestMethod]
         public void T001_Extensions_TextReader_ReadLines()
         {
             //string a = @"\\app.diablo.corelogic.com\LTL\FULFILLMENTS\CMAS\Ohio Housing Finance Agency\AKZA-8N1JW\OHFA_HHF_CoreLogic_20170719\master_pii_table.dat";
@@ -218,7 +238,7 @@ namespace GPL.UnitTests
             // 19 sec
             const string ODBCSQLServer = "Driver={SQL Server Native Client 11.0};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
 
-            const long RowsToRead = 100000;
+            const long RowsToRead = 700000;
 
             string CmdText = "select top " + RowsToRead.ToString() + " * from[Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]";
 

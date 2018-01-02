@@ -985,5 +985,49 @@ where TException : Exception
                 throw new Exception(string.Format(@"Fatal error: missing connecting string name=""""{0}"""" in web.config file", name));
             return RetObj;
         }
+
+
+        /// <summary>
+        /// Invokes the process.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <param name="useShellExecute">if set to <c>true</c> [use shell execute].</param>
+        /// <param name="createNoWindow">if set to <c>true</c> [create no window].</param>
+        /// <param name="windowStyle">The window style.</param>
+        /// <param name="waitForExit">Wait for exit.</param>
+        /// <returns></returns>
+        public static string InvokeProcess(string fileName, string arguments, bool useShellExecute = false, bool createNoWindow = true, ProcessWindowStyle windowStyle = ProcessWindowStyle.Normal, int? waitForExit = null)
+        {
+            // create the ProcessStartInfo.
+            ProcessStartInfo procStartInfo =
+                new ProcessStartInfo(fileName, arguments);
+
+            // The following commands are needed to redirect the standard output.
+            // This means that it will be redirected to the Process.StandardOutput StreamReader.
+            procStartInfo.RedirectStandardOutput = useShellExecute ? false : true;
+            //procStartInfo.RedirectStandardOutput = true;
+
+            procStartInfo.UseShellExecute = useShellExecute;
+            //procStartInfo.UseShellExecute = false;
+
+            // Do not create the black window.
+            procStartInfo.CreateNoWindow = createNoWindow;
+
+            procStartInfo.WindowStyle = windowStyle;
+
+            // Now we create a process, assign its ProcessStartInfo and start it
+            Process proc = new Process();
+            proc.StartInfo = procStartInfo;
+            proc.Start();
+
+            if (waitForExit==null)
+            proc.WaitForExit();
+            else
+                proc.WaitForExit((int)waitForExit);
+
+            // Get the output into a string
+            return procStartInfo.RedirectStandardOutput ? proc.StandardOutput.ReadToEnd() : string.Empty;
+        }
     }
 }
