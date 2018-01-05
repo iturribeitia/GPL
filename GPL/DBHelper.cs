@@ -45,12 +45,14 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
 using System.Data.OleDb;
 using System.Data.OracleClient;
 using System.Data.SqlClient;
+using System.Runtime.Serialization;
 
 namespace GPL
 {
@@ -492,65 +494,63 @@ namespace GPL
         /// <summary>
         /// Do SqlBulkCopy of the givin DbDataReader
         /// </summary>
-        /// <param name="ConnectionString"></param>
-        /// <param name="dt"></param>
-        /// <param name="TableName"></param>
-        /// <param name="BulkBatchSize"></param>
-        public static void DoSqlBulkCopy(string ConnectionString, DataTable dt, string TableName, int BulkBatchSize)
+        /// <param name="ConnectionString">The connection string.</param>
+        /// <param name="dataTable">The dt.</param>
+        /// <param name="TableName">Name of the table.</param>
+        /// <param name="BulkBatchSize">Size of the bulk batch.</param>
+        /// <param name="columnMapping">The column mapping.</param>
+        public static void DoSqlBulkCopy(string ConnectionString, DataTable dataTable, string TableName, int BulkBatchSize, List<SqlBulkCopyColumnMapping> columnMapping = null)
         {
-            try
-            {
-                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
+            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
                 {
                     bulkCopy.DestinationTableName = TableName;
                     // Set timeout to 0 to avoid timeout errors.
                     bulkCopy.BulkCopyTimeout = 0;
                     bulkCopy.BatchSize = BulkBatchSize;
 
-                    // Write from the source to the destination.
+                    // create the mapping if it is supplied.
+                    if (columnMapping != null && columnMapping.Count >0)
+                        foreach (var cm in columnMapping)
+                        {
+                            bulkCopy.ColumnMappings.Add(cm);
+                        }
 
-                    bulkCopy.WriteToServer(dt);
+                    // Write from the source to the destination.
+                    bulkCopy.WriteToServer(dataTable);
 
                     bulkCopy.Close();
                 }
-            }
-            catch
-            {
-                throw;
-            }
         }
 
         /// <summary>
         /// Do SqlBulkCopy of the givin DbDataReader
         /// </summary>
-        /// <param name="ConnectionString"></param>
-        /// <param name="providerName"></param>
-        /// <param name="dr"></param>
-        /// <param name="TableName"></param>
-        /// <param name="BulkBatchSize"></param>
-        public static void DoSqlBulkCopy(string ConnectionString, string providerName, DbDataReader dr, string TableName, int BulkBatchSize)
+        /// <param name="ConnectionString">The connection string.</param>
+        /// <param name="dataReader">The DataReader.</param>
+        /// <param name="TableName">Name of the table.</param>
+        /// <param name="BulkBatchSize">Size of the bulk batch.</param>
+        /// <param name="columnMapping">The column mapping.</param>
+        public static void DoSqlBulkCopy(string ConnectionString, IDataReader dataReader, string TableName, int BulkBatchSize, List<SqlBulkCopyColumnMapping> columnMapping = null)
         {
-            // check id the destination provider is System.Data.SqlClient
-            if (!providerName.Equals("System.Data.SqlClient")) throw new Exception("Destination Database provider must be: System.Data.SqlClient");
-            try
+            // TODO try to use a generic parameter to avoid this overloading, look the in extension as example.
+            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
             {
-                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
-                {
-                    bulkCopy.DestinationTableName = TableName;
-                    // Set timeout to 0 to avoid timeout errors.
-                    bulkCopy.BulkCopyTimeout = 0;
-                    bulkCopy.BatchSize = BulkBatchSize;
+                bulkCopy.DestinationTableName = TableName;
+                // Set timeout to 0 to avoid timeout errors.
+                bulkCopy.BulkCopyTimeout = 0;
+                bulkCopy.BatchSize = BulkBatchSize;
 
-                    // Write from the source to the destination.
+                // create the mapping if it is supplied.
+                if (columnMapping != null && columnMapping.Count > 0)
+                    foreach (var cm in columnMapping)
+                    {
+                        bulkCopy.ColumnMappings.Add(cm);
+                    }
 
-                    bulkCopy.WriteToServer(dr);
+                // Write from the source to the destination.
+                bulkCopy.WriteToServer(dataReader);
 
-                    bulkCopy.Close();
-                }
-            }
-            catch
-            {
-                throw;
+                bulkCopy.Close();
             }
         }
 
