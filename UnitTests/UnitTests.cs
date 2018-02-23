@@ -238,9 +238,9 @@ namespace GPL.UnitTests
             // 19 sec
             const string ODBCSQLServer = "Driver={SQL Server Native Client 11.0};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
 
-            const long RowsToRead = 700000;
+            const long RowsToRead = 100;
 
-            string CmdText = "select top " + RowsToRead.ToString() + " * from[Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]";
+            string CmdText = "select top " + RowsToRead.ToString() + " * from [Temporary].[dbo].[MLSLI_AKZA_96QW6S_Delivery]";
 
             const int BufferSize = 1024 * 4;
 
@@ -278,7 +278,7 @@ namespace GPL.UnitTests
 
                 DbDataReader rdr = (DbDataReader)Utility.RetryMethod(new Func<string, CommandType, ConnectionState, DbDataReader>(dbh.ExecuteReader), 3, 3, CmdText, CommandType.Text, ConnectionState.Open);
 
-                FileRows = rdr.ToDelimitedFile(TestFile, false, Encoding.Default, BufferSize, true, columnDelimiter: "|");
+                FileRows = rdr.ToDelimitedFile(TestFile, false, Encoding.Default, BufferSize, true,textQualifier: "\"", columnDelimiter: "|");
             }
 
             var r = File.Exists(TestFile);

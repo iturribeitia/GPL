@@ -58,7 +58,6 @@
   <ItemGroup>
     <Folder Include="App_Data\DataBases\" />
     <Folder Include="App_Data\Files\DelimitedFiles\" />
-    <Folder Include="App_Data\Files\SQL_Scripts\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GPL\GPL.csproj">
@@ -68,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Files\DataFiles\lorem ipsum.txt" />
+    <Content Include="App_Data\Files\SQL_Scripts\instnwnd.sql" />
+    <Content Include="App_Data\Files\SQL_Scripts\ReCreateData.sql" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
