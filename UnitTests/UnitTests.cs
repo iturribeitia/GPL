@@ -53,6 +53,8 @@ namespace GPL.UnitTests
         [TestMethod]
         public void T004_Utility_RetryMethod()
         {
+            // TODO USE A LOCAL DATABASE
+
             // Create the connection strings.
 
             // XX sec
@@ -221,6 +223,7 @@ namespace GPL.UnitTests
         [TestMethod]
         public void T004_Extensions_IDataReader_ToDelimitedFile()
         {
+            // TODO use a local database for this test.
             // Create the connection strings.
 
             // XX sec

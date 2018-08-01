@@ -841,6 +841,61 @@ namespace GPL
 
         }
 
+        /// <summary>
+        /// Convert to a CSV delimited the DataTable and write it ti the ref StringBuilder.
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <param name="recivingStringBuilder"></param>
+        /// <param name="includeHeaders"></param>
+        /// <param name="includeValues"></param>
+        public static void ToCSV(this DataTable dataTable, ref StringBuilder recivingStringBuilder, char characterUsedToDelimit = ',', bool includeHeaders = true, bool includeValues = true)
+        {
+
+            //headers  
+            if (includeHeaders)
+            {
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    recivingStringBuilder.Append(dataTable.Columns[i]);
+                    if (i < dataTable.Columns.Count - 1)
+                    {
+                        recivingStringBuilder.Append(characterUsedToDelimit);
+                    }
+                }
+            }
+
+            // Values
+            if (includeValues)
+            {
+                recivingStringBuilder.Append(Environment.NewLine);
+                foreach (DataRow dr in dataTable.Rows)
+                {
+                    for (int i = 0; i < dataTable.Columns.Count; i++)
+                    {
+                        if (!Convert.IsDBNull(dr[i]))
+                        {
+                            string value = dr[i].ToString();
+                            if (value.Contains(characterUsedToDelimit))
+                            {
+                                value = String.Format("\"{0}\"", value);
+                                recivingStringBuilder.Append(value);
+                            }
+                            else
+                            {
+                                recivingStringBuilder.Append(dr[i].ToString());
+                            }
+                        }
+                        if (i < dataTable.Columns.Count - 1)
+                        {
+                            recivingStringBuilder.Append(characterUsedToDelimit);
+                        }
+                    }
+                    recivingStringBuilder.Append(Environment.NewLine);
+                }
+            }
+        }
+
+
         #endregion DataTable
 
         #region IDataReader
