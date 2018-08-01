@@ -153,6 +153,9 @@ namespace GPL
             client.Port = port;
 
             //client.Send(msg);
+
+            // TODO 'RetryAction is deprecated, please use RetryMethod instead.'
+
             RetryAction(() => client.Send(msg), numRetries, retryTimeout);
         }
 

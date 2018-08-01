@@ -127,7 +127,7 @@ namespace GPL.UnitTests
             r = Utility.InvokeProcess(FileName, Arguments);
             r = Utility.InvokeProcess(FileName, Arguments, true);
             r = Utility.InvokeProcess(FileName, Arguments, true, false);
-            r = Utility.InvokeProcess(FileName, Arguments,true,false,System.Diagnostics.ProcessWindowStyle.Maximized,50000);
+            r = Utility.InvokeProcess(FileName, Arguments, true, false, System.Diagnostics.ProcessWindowStyle.Maximized, 50000);
 
             Assert.IsInstanceOfType(r, typeof(object));
 
@@ -233,7 +233,7 @@ namespace GPL.UnitTests
                 case DBHelper.Providers.SqlServer:
                     //Cnstring = SQL_PROD_CONNECTIONSTRING;
                     Cnstring = SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING;
-                    
+
                     break;
                 case DBHelper.Providers.OleDB:
                     Cnstring = SQL_OLEDB_LOCALDB_CONNECTIONSTRING;
@@ -256,7 +256,7 @@ namespace GPL.UnitTests
 
                 DbDataReader rdr = (DbDataReader)Utility.RetryMethod(new Func<string, CommandType, ConnectionState, DbDataReader>(dbh.ExecuteReader), 3, 3, CmdText, CommandType.Text, ConnectionState.Open);
 
-                FileRows = rdr.ToDelimitedFile(TestFile, false, Encoding.Default, BufferSize, true,textQualifier: "\"", columnDelimiter: "|");
+                FileRows = rdr.ToDelimitedFile(TestFile, false, Encoding.Default, BufferSize, true, textQualifier: "\"", columnDelimiter: "|");
             }
 
             var r = File.Exists(TestFile);
@@ -265,6 +265,31 @@ namespace GPL.UnitTests
             Assert.AreEqual(true, r);
             Assert.AreEqual(RowsToRead, FileRows);
 
+        }
+        /// <summary>
+        /// This is the destructor of this class.
+        /// </summary>
+        ~UnitTests()
+        {
+            // Detach the Northwind database.
+
+            var CommandText = string.Format(@"
+    USE MASTER;
+    ALTER DATABASE {0} SET OFFLINE WITH ROLLBACK IMMEDIATE;
+    EXEC sp_detach_db '{0}', 'true';", "Northwind");
+
+            using (var dbh = new DBHelper(false))
+            {
+                dbh.CreateDBObjects(SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING, DBHelper.Providers.SqlServer, null);
+
+                var newfuction = new Func<string, CommandType, ConnectionState, int>(dbh.ExecuteNonQuery); // You can define the delegate before or inside of the RetryMethod.
+                Utility.RetryMethod(newfuction, 3, 3, CommandText, CommandType.Text, ConnectionState.Open);
+                //rdr = (DataSet)Utility.RetryMethod(newfuction, 3, 3, CmdTextWRONG, CommandType.Text, ConnectionState.Open);
+
+                // Example with retries defining the delegate inside and imvoking the Utility.RetryMethod note that the return type 'DbDataReader' is declared at the end and the parameters types before.
+                // DbDataReader rdr = (DbDataReader)Utility.RetryMethod(new Func<string, CommandType, ConnectionState, DbDataReader>(dbh.ExecuteReader), 3, 3, CmdTextOK, CommandType.Text, ConnectionState.Open);
+
+            }
         }
 
     }
