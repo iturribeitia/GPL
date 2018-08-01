@@ -14,6 +14,16 @@ namespace GPL.UnitTests
     [TestClass]
     public class UnitTests
     {
+        const String SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING = @"Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
+        const String SQL_OLEDB_LOCALDB_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
+        const String SQL_ODBC_LOCALDB_CONNECTIONSTRING = @"Provider=Odbc;Driver={SQL Server};Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
+
+
+        public UnitTests()
+        {
+            AppDomain.CurrentDomain.SetData("DataDirectory", @"C:\Users\marcosi\Source\Repos\GPL\UnitTests\App_Data\DataBases");
+        }
+
         [TestMethod]
         public void T001_Utility_GetDataTabletFromDelimitedFile()
         {
@@ -53,29 +63,10 @@ namespace GPL.UnitTests
         [TestMethod]
         public void T004_Utility_RetryMethod()
         {
-            // TODO USE A LOCAL DATABASE
+            const long RowsToRead = 90;
 
-            // Create the connection strings.
-
-            // XX sec
-            const String SQL_PROD_CONNECTIONSTRING = @"Data Source=EDGQN1CPDMSQL09;Initial Catalog=Temporary;Integrated Security=true;";
-
-            // XX sec
-            const String SQLOLEDB_PROD_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=EDGQN1CPDMSQL09;Initial Catalog=Temporary;Integrated Security=SSPI;";
-
-            // 21 sec
-            //const string ODBCSQLServer = "Driver={SQL Server};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection = Yes; ";
-
-            // 22 sec
-            //const string ODBCSQLServer = "Driver={ODBC Driver 13 for SQL Server};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
-
-            // 19 sec
-            const string ODBCSQLServer = "Driver={SQL Server Native Client 11.0};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
-
-            const long RowsToRead = 100;
-
-            string CmdTextOK = "select top " + RowsToRead.ToString() + " * from[Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]";
-            string CmdTextWRONG = "select top " + RowsToRead.ToString() + " * from[xxx_Temporary].[dbo].[RPM_7SNEPC_Ols_Delivery]";
+            string CmdTextOK = "select top " + RowsToRead.ToString() + " * from [Northwind].[dbo].[Customers]";
+            string CmdTextWRONG = "select top " + RowsToRead.ToString() + " * [Northwind].[dbo].[XXXX]";
 
 
             //var Provider = DBHelper.Providers.OleDB;   // 12 sec
@@ -87,13 +78,13 @@ namespace GPL.UnitTests
             switch (Provider)
             {
                 case DBHelper.Providers.SqlServer:
-                    Cnstring = SQL_PROD_CONNECTIONSTRING;
+                    Cnstring = SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING;
                     break;
                 case DBHelper.Providers.OleDB:
-                    Cnstring = SQLOLEDB_PROD_CONNECTIONSTRING;
+                    Cnstring = SQL_OLEDB_LOCALDB_CONNECTIONSTRING;
                     break;
                 case DBHelper.Providers.ODBC:
-                    Cnstring = ODBCSQLServer;
+                    Cnstring = SQL_ODBC_LOCALDB_CONNECTIONSTRING;
                     break;
                 case DBHelper.Providers.Oracle:
                     break;
@@ -223,27 +214,9 @@ namespace GPL.UnitTests
         [TestMethod]
         public void T004_Extensions_IDataReader_ToDelimitedFile()
         {
-            // TODO use a local database for this test.
-            // Create the connection strings.
+            const long RowsToRead = 50;
 
-            // XX sec
-            const String SQL_PROD_CONNECTIONSTRING = @"Data Source=EDGQN1CPDMSQL09;Initial Catalog=Temporary;Integrated Security=true;";
-
-            // XX sec
-            const String SQLOLEDB_PROD_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=EDGQN1CPDMSQL09;Initial Catalog=Temporary;Integrated Security=SSPI;";
-
-            // 21 sec
-            //const string ODBCSQLServer = "Driver={SQL Server};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection = Yes; ";
-
-            // 22 sec
-            //const string ODBCSQLServer = "Driver={ODBC Driver 13 for SQL Server};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
-
-            // 19 sec
-            const string ODBCSQLServer = "Driver={SQL Server Native Client 11.0};Server=EDGQN1CPDMSQL09;Database=Temporary;Trusted_Connection=yes;";
-
-            const long RowsToRead = 100;
-
-            string CmdText = "select top " + RowsToRead.ToString() + " * from [Temporary].[dbo].[MLSLI_AKZA_96QW6S_Delivery]";
+            string CmdText = "select top " + RowsToRead.ToString() + " * from [Northwind].[dbo].[Customers]";
 
             const int BufferSize = 1024 * 4;
 
@@ -258,13 +231,15 @@ namespace GPL.UnitTests
             switch (Provider)
             {
                 case DBHelper.Providers.SqlServer:
-                    Cnstring = SQL_PROD_CONNECTIONSTRING;
+                    //Cnstring = SQL_PROD_CONNECTIONSTRING;
+                    Cnstring = SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING;
+                    
                     break;
                 case DBHelper.Providers.OleDB:
-                    Cnstring = SQLOLEDB_PROD_CONNECTIONSTRING;
+                    Cnstring = SQL_OLEDB_LOCALDB_CONNECTIONSTRING;
                     break;
                 case DBHelper.Providers.ODBC:
-                    Cnstring = ODBCSQLServer;
+                    Cnstring = SQL_ODBC_LOCALDB_CONNECTIONSTRING;
                     break;
                 case DBHelper.Providers.Oracle:
                     break;
