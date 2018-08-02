@@ -14,14 +14,19 @@ namespace GPL.UnitTests
     [TestClass]
     public class UnitTests
     {
-        const String SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING = @"Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
+        const String SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING = @"Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DataBases\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
         const String SQL_OLEDB_LOCALDB_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
         const String SQL_ODBC_LOCALDB_CONNECTIONSTRING = @"Provider=Odbc;Driver={SQL Server};Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
 
 
         public UnitTests()
         {
-            AppDomain.CurrentDomain.SetData("DataDirectory", @"C:\Users\marcosi\Source\Repos\GPL\UnitTests\App_Data\DataBases");
+            // Set the data folder for this application.
+            var a = Utility.GetCurrentExecutablePath();
+            var b = new FileInfo(a).Name;
+            a = a.Replace(@"\bin\Debug\" + b, @"\App_Data");
+
+            AppDomain.CurrentDomain.SetData("DataDirectory", a);
         }
 
         [TestMethod]
