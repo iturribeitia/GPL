@@ -69,6 +69,10 @@
     <Content Include="App_Data\DataBases\Northwind.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="App_Data\DataBases\Northwind_log.ldf">
+      <DependentUpon>Northwind.mdf</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Data\Files\DataFiles\lorem ipsum.txt" />
     <Content Include="App_Data\Files\SQL_Scripts\instnwnd.sql" />
     <Content Include="App_Data\Files\SQL_Scripts\ReCreateData.sql" />
