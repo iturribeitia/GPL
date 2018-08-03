@@ -279,16 +279,21 @@ namespace GPL.UnitTests
             // Detach the Northwind database.
 
             var CommandText = string.Format(@"
-    USE MASTER;
-    ALTER DATABASE {0} SET OFFLINE WITH ROLLBACK IMMEDIATE;
-    EXEC sp_detach_db '{0}', 'true';", "Northwind");
+USE MASTER;
+	
+IF db_id('{0}') IS NOT NULL
+    BEGIN
+        ALTER DATABASE {0} SET OFFLINE WITH ROLLBACK IMMEDIATE;
+        EXEC sp_detach_db '{0}', 'true';
+    END
+", "Northwind");
 
             using (var dbh = new DBHelper(false))
             {
                 dbh.CreateDBObjects(SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING, DBHelper.Providers.SqlServer, null);
 
                 var newfuction = new Func<string, CommandType, ConnectionState, int>(dbh.ExecuteNonQuery); // You can define the delegate before or inside of the RetryMethod.
-                Utility.RetryMethod(newfuction, 3, 3, CommandText, CommandType.Text, ConnectionState.Open);
+                Utility.RetryMethod(newfuction, 3, 3, CommandText, CommandType.Text, ConnectionState.Closed);
                 //rdr = (DataSet)Utility.RetryMethod(newfuction, 3, 3, CmdTextWRONG, CommandType.Text, ConnectionState.Open);
 
                 // Example with retries defining the delegate inside and imvoking the Utility.RetryMethod note that the return type 'DbDataReader' is declared at the end and the parameters types before.
