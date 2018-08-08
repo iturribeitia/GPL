@@ -12,14 +12,14 @@ using System.Data.Common;
 namespace GPL.UnitTests
 {
     [TestClass]
-    public class UnitTests
+    public class UT_GPL
     {
         const String SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING = @"Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DataBases\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
         const String SQL_OLEDB_LOCALDB_CONNECTIONSTRING = @"Provider=sqloledb;Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
         const String SQL_ODBC_LOCALDB_CONNECTIONSTRING = @"Provider=Odbc;Driver={SQL Server};Packet Size=32767;Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Northwind.mdf;Database=Northwind;Integrated Security=True;Connect Timeout=30;";
 
 
-        public UnitTests()
+        public UT_GPL()
         {
             // Set the data folder for this application.
             var a = Utility.GetCurrentExecutablePath();
@@ -274,7 +274,7 @@ namespace GPL.UnitTests
         /// <summary>
         /// This is the destructor of this class.
         /// </summary>
-        ~UnitTests()
+        ~UT_GPL()
         {
             // Detach the Northwind database.
 

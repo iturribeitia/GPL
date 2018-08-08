@@ -53,8 +53,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTests.cs" />
+    <Compile Include="UT_GPL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UT_PoppuloAPIClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Files\DelimitedFiles\" />

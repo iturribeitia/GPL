@@ -556,31 +556,5 @@ namespace GPL
 
         #endregion Bulk Insert
 
-        #region enums
-
-        /// <summary>
-        /// A list of data providers
-        /// </summary>
-        public enum Providers
-        {
-            /// <summary>
-            /// SQL server
-            /// </summary>
-            SqlServer,
-            /// <summary>
-            /// OLE database
-            /// </summary>
-            OleDB,
-            /// <summary>
-            /// ODBC
-            /// </summary>
-            ODBC,
-            /// <summary>
-            /// Oracle
-            /// </summary>
-            Oracle,
-        }
-
-        #endregion enums
     }
 }
