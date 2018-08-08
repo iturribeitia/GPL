@@ -44,26 +44,3 @@ public enum SubscriberGender
     Male,
     Female,
 }
-
-/// <summary>
-/// A list of data providers
-/// </summary>
-public enum Providers
-{
-    /// <summary>
-    /// SQL server
-    /// </summary>
-    SqlServer,
-    /// <summary>
-    /// OLE database
-    /// </summary>
-    OleDB,
-    /// <summary>
-    /// ODBC
-    /// </summary>
-    ODBC,
-    /// <summary>
-    /// Oracle
-    /// </summary>
-    Oracle,
-}

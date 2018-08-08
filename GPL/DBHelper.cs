@@ -502,24 +502,24 @@ namespace GPL
         public static void DoSqlBulkCopy(string ConnectionString, DataTable dataTable, string TableName, int BulkBatchSize, List<SqlBulkCopyColumnMapping> columnMapping = null)
         {
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
-                {
-                    bulkCopy.DestinationTableName = TableName;
-                    // Set timeout to 0 to avoid timeout errors.
-                    bulkCopy.BulkCopyTimeout = 0;
-                    bulkCopy.BatchSize = BulkBatchSize;
+            {
+                bulkCopy.DestinationTableName = TableName;
+                // Set timeout to 0 to avoid timeout errors.
+                bulkCopy.BulkCopyTimeout = 0;
+                bulkCopy.BatchSize = BulkBatchSize;
 
-                    // create the mapping if it is supplied.
-                    if (columnMapping != null && columnMapping.Count >0)
-                        foreach (var cm in columnMapping)
-                        {
-                            bulkCopy.ColumnMappings.Add(cm);
-                        }
+                // create the mapping if it is supplied.
+                if (columnMapping != null && columnMapping.Count > 0)
+                    foreach (var cm in columnMapping)
+                    {
+                        bulkCopy.ColumnMappings.Add(cm);
+                    }
 
-                    // Write from the source to the destination.
-                    bulkCopy.WriteToServer(dataTable);
+                // Write from the source to the destination.
+                bulkCopy.WriteToServer(dataTable);
 
-                    bulkCopy.Close();
-                }
+                bulkCopy.Close();
+            }
         }
 
         /// <summary>
@@ -556,5 +556,31 @@ namespace GPL
 
         #endregion Bulk Insert
 
+        #region enums
+
+        /// <summary>
+        /// A list of data providers
+        /// </summary>
+        public enum Providers
+        {
+            /// <summary>
+            /// SQL server
+            /// </summary>
+            SqlServer,
+            /// <summary>
+            /// OLE database
+            /// </summary>
+            OleDB,
+            /// <summary>
+            /// ODBC
+            /// </summary>
+            ODBC,
+            /// <summary>
+            /// Oracle
+            /// </summary>
+            Oracle,
+        }
+
+        #endregion enums
     }
 }
