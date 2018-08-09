@@ -217,7 +217,7 @@ namespace GPL
             // validate the input parameters.
 
             // validate the endPointBaseURL.
-            if (string.IsNullOrEmpty(endPointBaseURL) || !URLDomainExist(endPointBaseURL))
+            if (string.IsNullOrEmpty(endPointBaseURL) || !Utility.URLDomainExist(endPointBaseURL))
             {
                 throw new ArgumentException($"Value: {(string.IsNullOrEmpty(endPointBaseURL) ? "'IsNullOrEmpty'" : endPointBaseURL)} passed to parameter 'endPointBaseURL' is not a valid URL.");
             }
@@ -434,56 +434,6 @@ namespace GPL
         }
 
         /// <summary>
-        /// Ping the host of the given URL to see if it is responding.
-        /// </summary>
-        /// <param name="strURL"></param>
-        /// <returns></returns>
-        public static bool URLDomainExist(string strURL)
-        {
-            bool MyReturn = false;
-            try
-            {
-                Uri myUri = new Uri(strURL);
-                string host = myUri.Host;
-
-                Ping pingSender = new Ping();
-
-                PingReply reply = pingSender.Send(host);
-
-                if (reply.Status == IPStatus.Success)
-
-                    MyReturn = true;
-                else
-                    MyReturn = true;
-            }
-            catch (Exception ex)
-            {
-                MyReturn = false;
-            }
-
-            return MyReturn;
-        }
-
-        /// <summary>
-        /// Validate is a string is a XML.
-        /// </summary>
-        /// <param name="xml"></param>
-        /// <returns></returns>
-        public static bool IsXML(string xml)
-        {
-            try
-            {
-                new XmlDocument().LoadXml(xml);
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
         /// Get the data source to import rows as Poppulo subscribers.
         /// </summary>
         private void GetDataSource()
@@ -577,18 +527,5 @@ namespace GPL
             return MakeHttpWebRequest(MyURL, HttpVerb.POST, xmlSubscriber.InnerXml);
         }
 
-        /// <summary>
-        /// Create a Random string
-        /// </summary>
-        /// <param name="length">Set the lenght of the returned string.</param>
-        /// <returns>A random string.</returns>
-        public static string RandomString(int length)
-        {
-            Random random = new Random();
-
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
     }
 }

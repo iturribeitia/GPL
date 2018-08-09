@@ -66,7 +66,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T001_Utility_GetDataTabletFromDelimitedFile()
+        public void Utility_T001_GetDataTabletFromDelimitedFile()
         {
             var a = Utility.GetCurrentExecutablePath();
             var b = new FileInfo(a).Name;
@@ -76,7 +76,7 @@ namespace GPL.UnitTests
             Assert.ReferenceEquals(r, new DataTable());
         }
         [TestMethod]
-        public void T002_Utility_FileToString()
+        public void Utility_T002_FileToString()
         {
             var a = Utility.GetCurrentExecutablePath();
             var b = new FileInfo(a).Name;
@@ -90,7 +90,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T003_Utility_GetCurrentExecutablePath()
+        public void Utility_T003_GetCurrentExecutablePath()
         {
             var r = Utility.GetCurrentExecutablePath();
 
@@ -102,7 +102,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T004_Utility_RetryMethod()
+        public void Utility_T004_RetryMethod()
         {
             const long RowsToRead = 90;
 
@@ -155,7 +155,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T005_Utility_InvokeProcess()
+        public void Utility_T005_InvokeProcess()
         {
             //const string FileName = @"C:\Program Files\7-Zip\7zG.exe";
             //const string Arguments = @"a -mx1 -tzip ""C:\Temp\test.ZIP""  ""C:\Temp\test.csv""";
@@ -175,7 +175,15 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T001_Extensions_TextReader_ReadLines()
+        public void Utility_T006_URLDomainExist()
+        {
+            Assert.IsTrue(Utility.URLDomainExist("https://www.google.com/"));
+            Assert.IsFalse(Utility.URLDomainExist("https://www.UUUUgoogle.com/"));
+            Assert.IsFalse(Utility.URLDomainExist("@#$%^"));
+        }
+
+        [TestMethod]
+        public void Extensions_T001_TextReader_ReadLines()
         {
             //string a = @"\\app.diablo.corelogic.com\LTL\FULFILLMENTS\CMAS\Ohio Housing Finance Agency\AKZA-8N1JW\OHFA_HHF_CoreLogic_20170719\master_pii_table.dat";
 
@@ -201,7 +209,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T002_Extensions_DirectoryInfo_CreateDirectory()
+        public void Extensions_T002_DirectoryInfo_CreateDirectory()
         {
             string a = @"C:\temp\dir1";
             string b = @"C:\temp\dir1\dir2\dir3";
@@ -233,7 +241,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T003_Extensions_IEnumerable_ToCSV()
+        public void Extensions_T003_IEnumerable_ToCSV()
         {
             List<string> L = new List<string>();
 
@@ -253,7 +261,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void T004_Extensions_IDataReader_ToDelimitedFile()
+        public void Extensions_T004_IDataReader_ToDelimitedFile()
         {
             const long RowsToRead = 50;
 

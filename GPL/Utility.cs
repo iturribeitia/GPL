@@ -48,6 +48,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -100,19 +101,7 @@ namespace GPL
             //return System.Reflection.Assembly.GetEntryAssembly().Location;
             return System.Reflection.Assembly.GetExecutingAssembly().Location;
         }
-
-        /// <summary>
-        /// Get an Enum from a Number
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="number"></param>
-        /// <returns></returns>
-        public static T NumToEnum<T>(int number)
-        {
-            // http://www.switchonthecode.com/tutorials/csharp-snippet-tutorial-how-to-get-an-enum-from-a-number
-            return (T)Enum.ToObject(typeof(T), number);
-        }
-
+        
         /// <summary>
         /// Sends the message email.
         /// </summary>
@@ -445,6 +434,37 @@ where TException : Exception
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Ping the host of the given URL to see if it is responding.
+        /// </summary>
+        /// <param name="strURL"></param>
+        /// <returns></returns>
+        public static bool URLDomainExist(string strURL)
+        {
+            bool MyReturn = false;
+            try
+            {
+                Uri myUri = new Uri(strURL);
+                string host = myUri.Host;
+
+                Ping pingSender = new Ping();
+
+                PingReply reply = pingSender.Send(host);
+
+                if (reply.Status == IPStatus.Success)
+
+                    MyReturn = true;
+                else
+                    MyReturn = true;
+            }
+            catch (Exception ex)
+            {
+                MyReturn = false;
+            }
+
+            return MyReturn;
         }
 
         #endregion Validate Server Listering.
@@ -988,7 +1008,6 @@ where TException : Exception
                 throw new Exception(string.Format(@"Fatal error: missing connecting string name=""""{0}"""" in web.config file", name));
             return RetObj;
         }
-
 
         /// <summary>
         /// Invokes the process.

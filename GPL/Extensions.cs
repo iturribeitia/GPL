@@ -96,6 +96,25 @@ namespace GPL
         #region string extensions
 
         /// <summary>
+        /// Validate is a string is a XML.
+        /// </summary>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        public static bool IsXML(this string xml)
+        {
+            try
+            {
+                new XmlDocument().LoadXml(xml);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Determines whether the curent string has any single tag. i.e. <b> (it doesn't have to be closed).
         /// </summary>
         /// <param name="s">The current string.</param>
@@ -192,59 +211,59 @@ namespace GPL
             // string message = "Welcome {0} (Last login: {1})".FormatString(userName, lastLogin);
             return string.Format(format, args);
         }
-        [Obsolete("ToBoolean is deprecated, please use Parse<T> instead.")]
-        public static Boolean ToBoolean(this string value)
-        {
-            Boolean result = true;
+        //[Obsolete("ToBoolean is deprecated, please use Parse<T> instead.")]
+        //public static Boolean ToBoolean(this string value)
+        //{
+        //    Boolean result = true;
 
-            Boolean.TryParse(value, out result);
+        //    Boolean.TryParse(value, out result);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        [Obsolete("ToInt is deprecated, please use Parse<T> instead.")]
-        public static int ToInt(this string value)
-        {
-            int result = 0;
+        //[Obsolete("ToInt is deprecated, please use Parse<T> instead.")]
+        //public static int ToInt(this string value)
+        //{
+        //    int result = 0;
 
-            if (!string.IsNullOrEmpty(value))
-                int.TryParse(value, out result);
+        //    if (!string.IsNullOrEmpty(value))
+        //        int.TryParse(value, out result);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        [Obsolete("ToInt16 is deprecated, please use Parse<T> instead.")]
-        public static long ToInt16(this string value)
-        {
-            Int16 result = 0;
+        //[Obsolete("ToInt16 is deprecated, please use Parse<T> instead.")]
+        //public static long ToInt16(this string value)
+        //{
+        //    Int16 result = 0;
 
-            if (!string.IsNullOrEmpty(value))
-                Int16.TryParse(value, out result);
+        //    if (!string.IsNullOrEmpty(value))
+        //        Int16.TryParse(value, out result);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        [Obsolete("ToInt32 is deprecated, please use Parse<T> instead.")]
-        public static long ToInt32(this string value)
-        {
-            Int32 result = 0;
+        //[Obsolete("ToInt32 is deprecated, please use Parse<T> instead.")]
+        //public static long ToInt32(this string value)
+        //{
+        //    Int32 result = 0;
 
-            if (!string.IsNullOrEmpty(value))
-                Int32.TryParse(value, out result);
+        //    if (!string.IsNullOrEmpty(value))
+        //        Int32.TryParse(value, out result);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        [Obsolete("ToInt64 is deprecated, please use Parse<T> instead.")]
-        public static long ToInt64(this string value)
-        {
-            Int64 result = 0;
+        //[Obsolete("ToInt64 is deprecated, please use Parse<T> instead.")]
+        //public static long ToInt64(this string value)
+        //{
+        //    Int64 result = 0;
 
-            if (!string.IsNullOrEmpty(value))
-                Int64.TryParse(value, out result);
+        //    if (!string.IsNullOrEmpty(value))
+        //        Int64.TryParse(value, out result);
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public static bool Match(this string value, string pattern)
         {
@@ -252,39 +271,25 @@ namespace GPL
             return regex.IsMatch(value);
         }
 
-        public static string base64Encode(this string data)
+        public static string Base64Encode(this string data)
         {
-            try
-            {
-                byte[] encData_byte = new byte[data.Length];
-                encData_byte = System.Text.Encoding.UTF8.GetBytes(data);
-                string encodedData = Convert.ToBase64String(encData_byte);
-                return encodedData;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Error in base64Encode" + e.Message);
-            }
+            byte[] encData_byte = new byte[data.Length];
+            encData_byte = System.Text.Encoding.UTF8.GetBytes(data);
+            string encodedData = Convert.ToBase64String(encData_byte);
+            return encodedData;
         }
 
-        public static string base64Decode(this string data)
+        public static string Base64Decode(this string data)
         {
-            try
-            {
-                System.Text.UTF8Encoding encoder = new System.Text.UTF8Encoding();
-                System.Text.Decoder utf8Decode = encoder.GetDecoder();
+            System.Text.UTF8Encoding encoder = new System.Text.UTF8Encoding();
+            System.Text.Decoder utf8Decode = encoder.GetDecoder();
 
-                byte[] todecode_byte = Convert.FromBase64String(data);
-                int charCount = utf8Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
-                char[] decoded_char = new char[charCount];
-                utf8Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
-                string result = new String(decoded_char);
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Error in base64Decode" + e.Message);
-            }
+            byte[] todecode_byte = Convert.FromBase64String(data);
+            int charCount = utf8Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
+            char[] decoded_char = new char[charCount];
+            utf8Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
+            string result = new String(decoded_char);
+            return result;
         }
 
         public static string ComputeHash(this string Message)
@@ -456,7 +461,8 @@ namespace GPL
 
         #endregion string extensions
 
-        #region this IEnumerable<T>
+        #region TextReader extensions
+
         /// <summary>
         /// Reads a TextReader line by line expecifying the character used as line feed.
         /// </summary>
@@ -490,6 +496,11 @@ namespace GPL
                 chars.Add(c);
             }
         }
+
+        #endregion TextReader extensions
+
+        #region this IEnumerable<T>
+
         public static void Each<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
             foreach (T item in enumerable)
@@ -507,6 +518,7 @@ namespace GPL
         /// <returns></returns>
         public static string ToCSV<T>(this IEnumerable<T> instance, char separator = ',')
         {
+            // TODO review there is other ToCSV maybe could unify.
             StringBuilder csv;
             if (instance != null && instance.Count() != 0)
             {

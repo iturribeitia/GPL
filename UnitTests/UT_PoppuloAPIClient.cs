@@ -129,16 +129,7 @@ namespace GPL.UnitTests
         }
         //
 
-        [TestMethod]
-        public void TM_0070_URLDomainExist()
-        {
-            Assert.IsTrue(PoppuloAPIClient.URLDomainExist("https://www.google.com/"));
-            Assert.IsFalse(PoppuloAPIClient.URLDomainExist("https://www.UUUUgoogle.com/"));
-            Assert.IsFalse(PoppuloAPIClient.URLDomainExist("@#$%^"));
-        }
-
-        // URLDomainExist
-
+        
         [TestMethod]
         public void TM_0080_GetAccount_OK()
         {
@@ -154,7 +145,7 @@ namespace GPL.UnitTests
             Assert.AreEqual(HttpStatusCode.OK, PC.LastHttpStatusCode);
             Assert.AreEqual(@"OK", PC.LastHttpStatusDescription);
             Assert.IsTrue(Myresults.Contains(@"<name>Ultimate Software API Test Account</name>"));
-            Assert.IsTrue(PoppuloAPIClient.IsXML(Myresults));
+            Assert.IsTrue(Myresults.IsXML());
 
         }
 
@@ -443,7 +434,7 @@ namespace GPL.UnitTests
             string subscriberID = null;
 
             if (string.IsNullOrEmpty(subscriberID))
-                subscriberID = PoppuloAPIClient.RandomString(10);
+                subscriberID = Utility.RandomString(10);
 
             // Start replacing the template with values.
 
