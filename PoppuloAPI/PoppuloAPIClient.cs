@@ -44,8 +44,9 @@ using System.Xml;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using GPL;
 
-namespace GPL
+namespace PoppuloAPI
 {
     /// <summary>
     /// This class is designed to handle all the web methods that the REST WEB API poppulo exposes.

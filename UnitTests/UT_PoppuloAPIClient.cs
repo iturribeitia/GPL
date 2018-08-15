@@ -36,6 +36,7 @@
 
 using GPL;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PoppuloAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -290,6 +291,50 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
+        public void TM_0111_GetSubscriberByexternal_id()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+
+            // Execute the method.
+            string MyRetVal = PC.GetSubscriberByExternal_id(@"SomeValue", SubscriberStatus.all);
+
+            string[] ExpectedValues = new[] { @"<email>testsubscriber01@testdomain.com</email>" };
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedValueFound = false;
+
+            foreach (var item in ExpectedValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedValueFound = true;
+                    break;
+                }
+            }
+
+            Assert.IsTrue(ExpectedValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+        }
+
+        [TestMethod]
         public void TM_0120_GetSubscriberByEmail_NoExist()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
@@ -442,7 +487,7 @@ namespace GPL.UnitTests
             MySubscriber.Replace("{subscriber id}", subscriberID);
             MySubscriber.Replace("{city}", "city_Value");
             MySubscriber.Replace("{email}", $"Test_{subscriberID}@TestDomain.com");
-            MySubscriber.Replace("{status}", SubscriberStatus.ACTIVE.ToString()); // todo test this with the other status. 
+            MySubscriber.Replace("{status}", SubscriberStatus.active.ToString()); // todo test this with the other status. 
             MySubscriber.Replace("{surname}", "surname_Value"); // this is the Last Name
             MySubscriber.Replace("{company}", "company_Value");
             MySubscriber.Replace("{address1}", "address1_Value");

@@ -65,6 +65,10 @@
       <Project>{6cd92ace-0dd4-4a81-bbbe-7f090ac05a3f}</Project>
       <Name>GPL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PoppuloAPI\PoppuloAPI.csproj">
+      <Project>{696bb357-83b5-48e9-9b80-3d37eb2083f9}</Project>
+      <Name>PoppuloAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\DataBases\Northwind.mdf">

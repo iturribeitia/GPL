@@ -65,18 +65,19 @@ namespace GPL
 /// <summary>
 /// enum to handle subscriber status.
 /// </summary>
-public enum SubscriberStatus
-{
-    ACTIVE,
-    INACTIVE,
-    OPT_OUT
-}
+//public enum SubscriberStatus
+//{
+//    active,
+//    inactive,
+//    opt_out,
+//    all
+//}
 
 /// <summary>
 /// enum to handle subscriber genders.
 /// </summary>
-public enum SubscriberGender
-{
-    Male,
-    Female,
-}
+//public enum SubscriberGender
+//{
+//    Male,
+//    Female,
+//}
