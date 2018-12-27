@@ -95,6 +95,13 @@ namespace GPL
 
         #region string extensions
 
+        /// <summary>
+        /// Get Substring By String
+        /// </summary>
+        /// <param name="thisString"></param>
+        /// <param name="startWith">String to start</param>
+        /// <param name="endWith">String to end</param>
+        /// <returns></returns>
         public static string GetSubstringByString(this string thisString, string startWith, string endWith)
         {
             return thisString.Substring((thisString.IndexOf(startWith) + startWith.Length), (thisString.IndexOf(endWith) - thisString.IndexOf(startWith) - startWith.Length));
