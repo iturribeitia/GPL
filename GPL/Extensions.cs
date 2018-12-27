@@ -95,6 +95,11 @@ namespace GPL
 
         #region string extensions
 
+        public static string GetSubstringByString(this string thisString, string startWith, string endWith)
+        {
+            return thisString.Substring((thisString.IndexOf(startWith) + startWith.Length), (thisString.IndexOf(endWith) - thisString.IndexOf(startWith) - startWith.Length));
+        }
+
         /// <summary>
         /// Validate is a string is a XML.
         /// </summary>

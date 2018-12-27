@@ -52,6 +52,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -66,6 +67,55 @@ namespace GPL
     /// </summary>
     static public class Utility
     {
+        #region HttpWebRequest
+        /// <summary>
+        /// Get and write certificate from URL into file in path
+        /// </summary>
+        /// <param name="_URL">URL of website with certficate</param>
+        /// <param name="_path">Path where you want to store certificate</param>
+        private static void SaveCertificate(String _URL, String _path)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_URL);
+                request.AllowAutoRedirect = false;
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                response.Close();
+
+                X509Certificate2 cert = new X509Certificate2(request.ServicePoint.Certificate);
+
+                File.WriteAllText(_path, ExportToPEM(cert));
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Export a certificate to a PEM format string
+        /// </summary>
+        /// <param name="_cert">The certificate to export</param>
+        /// <returns>A PEM encoded string</returns>
+        public static string ExportToPEM(X509Certificate2 _cert)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            try
+            {
+                builder.AppendLine("-----BEGIN CERTIFICATE-----");
+                builder.AppendLine(Convert.ToBase64String(_cert.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks));
+                builder.AppendLine("-----END CERTIFICATE-----");
+
+            }
+            catch (Exception)
+            {
+            }
+
+            return builder.ToString();
+        }
+        #endregion HttpWebRequest
+
         #region Microsoft SQL Operations
         /// <summary>
         /// Check if a SQL tables exist in the specified database.

@@ -315,6 +315,19 @@ namespace GPL.UnitTests
             Assert.AreEqual(RowsToRead, FileRows);
 
         }
+
+        [TestMethod]
+        public void Extensions_T005_string_GetSubstringByString()
+        {
+           string Mystring = "Edit: Subscriber (54vtpmcj7l8)";
+
+            var Myresult = Mystring.GetSubstringByString("(", ")");
+
+            Assert.IsTrue(Myresult.Equals("54vtpmcj7l8"));
+
+        }
+
+
         /// <summary>
         /// This is the destructor of this class.
         /// </summary>
