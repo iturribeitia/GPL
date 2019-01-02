@@ -34,16 +34,13 @@
     along with GPL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using GPL;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoppuloAPI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace GPL.UnitTests
@@ -61,16 +58,35 @@ namespace GPL.UnitTests
         */
 
         const string CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE = @"Server=FL1MUSGDBCL01\IETL;Database=ETLDB;Trusted_Connection=True;";
-        const string STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE = @"[ETLDB].[Poppulo].[usp_Ultimate_Employee_To_Poppulo_Sel]";
+        //const string STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE = @"[ETLDB].[Poppulo].[usp_Ultimate_Employee_To_Poppulo_Sel]";
+        const string STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE = @"[ETLDB].[Poppulo].[usp_Ultimate_Employee_To_Poppulo_Sel_With_Tags]";
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            // Get the Ulti Safe Secret.
+            //string strSafeSecret = PoppuloAPIClient.GetUltiSafeSecret(url, appId, userId, secretPath);
+
+            // Extract Sensitive data from the secret.
+
+            // You must to mannually remove this Assert when you are testing with ULTISAFE_PRODUCTION
+            //var Comment = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "Comment");
+            //Assert.IsTrue(Comment == "This are the credentials to consume the Poppulo development WEB API");
+
+            //POPPULO_WEB_API_BASE_URL = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_WEB_API_BASE_URL");
+            //POPPULO_ACCOUNTCODE = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_ACCOUNTCODE");
+            //POPPULO_USERNAME = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_USERNAME");
+            //POPPULO_PASSWORD = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_PASSWORD");
+        }
 
         [TestMethod]
         public void TM_0010_PoppuloAPIClient_Constructor_OK()
         {
             // Create a new instance of the PoppuloAPIClient class. (Normal)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
 
             Type expectedType = typeof(PoppuloAPIClient);
-            Assert.IsInstanceOfType(PC, expectedType);     //passes
+            Assert.IsInstanceOfType(PC, expectedType);
         }
 
         [TestMethod]
@@ -78,45 +94,42 @@ namespace GPL.UnitTests
         public void TM_0020_PoppuloAPIClient_Constructor_endPointBaseURL_IsNull()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid baseURL parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(null, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(null, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException),
-   "A AccountCode of null was inappropriately allowed.")]
+        [ExpectedException(typeof(ArgumentException), "A AccountCode of null was inappropriately allowed.")]
         public void TM_0030_PoppuloAPIClient_Constructor_AccountCode_IsNull()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid AccountCode parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, null, POPPULO_USERNAME, POPPULO_PASSWORD);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, null, POPPULO_USERNAME, POPPULO_PASSWORD);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException),
-   "A UserName of null was inappropriately allowed.")]
+        [ExpectedException(typeof(ArgumentException), "A UserName of null was inappropriately allowed.")]
         public void TM_0040_PoppuloAPIClient_Constructor_UserName_IsNull()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid UserName parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, null, POPPULO_PASSWORD);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, null, POPPULO_PASSWORD);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException),
-  "A Password of null was inappropriately allowed.")]
+        [ExpectedException(typeof(ArgumentException), "A Password of null was inappropriately allowed.")]
         public void TM_0050_PoppuloAPIClient_Constructor_Password_IsNull()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, null);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, null);
         }
 
         //
         [TestMethod]
         public void TM_0060_PoppuloAPIClient_Constructor_Using_HTTP()
         {
-            // replace the HTTPS by HTTP to check if it is pssible to authenticate over http.
+            // replace the HTTPS by HTTP to check if it is possible to authenticate over http.
             var HTTP_POPPULO_WEB_API_BASE_URL = Regex.Replace(POPPULO_WEB_API_BASE_URL, "https", "http", RegexOptions.IgnoreCase);
 
             // Create a new instance of the PoppuloAPIClient class.
-            PoppuloAPIClient PC = new PoppuloAPIClient(HTTP_POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(HTTP_POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
 
             // Now do a GET operation to verify if it is possible over http not https.
             string Myresults = PC.GetAccount();
@@ -130,12 +143,19 @@ namespace GPL.UnitTests
         }
         //
 
-        
+        [TestMethod]
+        public void TM_0070_URLDomainExist()
+        {
+            Assert.IsTrue(PoppuloAPIClient.URLDomainExist("https://www.google.com/"));
+            Assert.IsFalse(PoppuloAPIClient.URLDomainExist("https://www.UUUUgoogle.com/"));
+            Assert.IsFalse(PoppuloAPIClient.URLDomainExist("@#$%^"));
+        }
+
         [TestMethod]
         public void TM_0080_GetAccount_OK()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // Execute the method.
             string Myresults = PC.GetAccount();
@@ -146,15 +166,15 @@ namespace GPL.UnitTests
             Assert.AreEqual(HttpStatusCode.OK, PC.LastHttpStatusCode);
             Assert.AreEqual(@"OK", PC.LastHttpStatusDescription);
             Assert.IsTrue(Myresults.Contains(@"<name>Ultimate Software API Test Account</name>"));
-            Assert.IsTrue(Myresults.IsXML());
+            Assert.IsTrue(PoppuloAPIClient.IsXML(Myresults));
 
         }
 
         [TestMethod]
         public void TM_0090_ListAccount_OK()
         {
-            // Create a new instance of the PoppuloAPIClient class. (No erros expected for this Unit Test method.)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // Execute the method.
             string MyRetVal = PC.ListAccount();
@@ -198,10 +218,257 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
+        public void TM_0091_ListTags_OK()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Execute the method.
+            string MyRetVal = PC.ListTags();
+
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<tags total=" };
+
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedAnyOfTheValueFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+
+        }
+
+        [TestMethod]
+        public void TM_0092_GetTag_OK()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // first create the unit test tag.
+            PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Description");
+
+            // Execute the method.
+            string MyRetVal = PC.GetTag(@"Tag_For_Unit_Test_Name");
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<tag name=" };
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedAnyOfTheValueFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+
+            PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+
+        }
+
+        [TestMethod]
+        public void TM_0093_CreateTag_OK()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Delete the tag first if it exist.
+            string MyRetVal = PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+
+            // Execute the method.
+            MyRetVal = PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Name");
+
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<code>201</code><resources_created>" };
+
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedAnyOfTheValueFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Created };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+
+            // Delete the tag first if it exist.
+            PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+
+        }
+
+        [TestMethod]
+        public void TM_0094_UpdateTag_OK()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // first create the unit test tag.
+            string MyRetVal = PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Description");
+
+            // Execute the method.
+            MyRetVal = PC.UpdateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Name_Updated", @"Tag_For_Unit_Test_Description_Updated");
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<code>200</code><resources_updated>" };
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedAnyOfTheValueFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+
+            MyRetVal = PC.DeleteTag(@"Tag_For_Unit_Test_Name_Updated");
+        }
+
+        [TestMethod]
+        public void TM_0095_DeleteTag_OK()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // first create the unit test tag.
+            string MyRetVal = PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Description");
+
+            // Execute the method.
+            MyRetVal = PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<code>200</code><resources_deleted>" };
+
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedAnyOfTheValueFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+        }
+
+        [TestMethod]
         public void TM_0100_GetAccount_Account_No_Exist()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid AccountCode parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, "CheckNoexist" + POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, "CheckNoexist" + POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
             string MyRetVal = PC.GetAccount();
@@ -246,7 +513,7 @@ namespace GPL.UnitTests
         public void TM_0110_GetSubscriberByEmail()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
             string MyRetVal = PC.GetSubscriberByEmail(@"testsubscriber01@testdomain.com");
@@ -291,15 +558,15 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void TM_0111_GetSubscriberByexternal_id()
+        public void TM_0111_GetSubscriberByexternal_id_DoNotExists()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.GetSubscriberByExternal_id(@"SomeValue", SubscriberStatus.all);
+            string MyRetVal = PC.GetSubscriberByExternal_id(@"xxxSomeValue", SubscriberStatus.all);
 
-            string[] ExpectedValues = new[] { @"<email>testsubscriber01@testdomain.com</email>" };
+            string[] ExpectedValues = new[] { @"<totalResults>0</totalResults>" };
 
             Type ExpectedType = typeof(string);
 
@@ -335,10 +602,72 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
+        public void TM_0112_GetSubscriberByexternal_id_Exists()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+
+            // Execute the method.
+            string MyRetVal = PC.GetSubscriberByExternal_id(@"SomeValue", SubscriberStatus.all);
+
+            // Verify the returned type
+            Type ExpectedType = typeof(string);
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            // verify that the returned string is a XML.
+            Assert.IsTrue(PoppuloAPIClient.IsXML(MyRetVal));
+
+            // verify that returned value contains one of the expected values.
+            string[] ExpectedValues = new[] { @"<email>testsubscriber01@testdomain.com</email>" };
+            bool ExpectedValueFound = false;
+
+            foreach (var item in ExpectedValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedValueFound = true;
+                    break;
+                }
+            }
+
+            Assert.IsTrue(ExpectedValueFound);
+
+            // Assert by ExpectedHttpStatusCodes
+            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+
+            bool ExpectedHttpStatusCodeFound = false;
+
+            foreach (var item in ExpectedHttpStatusCodes)
+            {
+                if (PC.LastHttpStatusCode.Equals(item))
+                {
+                    ExpectedHttpStatusCodeFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(MyRetVal);
+
+            // Validate the <subscribers total="1" attribute 
+            string attrVal = doc.SelectSingleNode("/subscribers/@total").Value;
+
+            Assert.IsTrue(attrVal == "1");
+
+            // Validate the <totalResults>1</totalResults> Node 
+            string nodeVal = doc.SelectSingleNode("/subscribers/totalResults").InnerText;
+
+            Assert.IsTrue(nodeVal == "1");
+
+        }
+
+
+        [TestMethod]
         public void TM_0120_GetSubscriberByEmail_NoExist()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
             string MyRetVal = PC.GetSubscriberByEmail(@"NoExist@testdomain.com");
@@ -382,10 +711,10 @@ namespace GPL.UnitTests
         [TestMethod]
         public void TM_0130_ListSubscriberPermissionsByEmail_OK()
         {
-            // todo review this test why API acount does not have access and return 403.
+            // todo review this test why API account does not have access and return 403.
 
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
             string MyRetVal = PC.ListSubscriberPermissionsByEmail(@"testsubscriber01@testdomain.com");
@@ -431,7 +760,7 @@ namespace GPL.UnitTests
         public void TM_0140_ListSubscriberPermissionsByEmail_NoExist()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
             string MyRetVal = PC.ListSubscriberPermissionsByEmail(@"NoExist@testdomain.com");
@@ -462,15 +791,14 @@ namespace GPL.UnitTests
 
         }
 
-
         [TestMethod]
         public void TM_0150_CreateSubscriber()
         {
             // Create a instance on the PoppuloAPIClient.
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Get the string from the template
-            StringBuilder MySubscriber = new StringBuilder(PoppuloAPIClient.XMLSubscriber_Template);
+            StringBuilder MySubscriber = new StringBuilder(PoppuloAPIClient.XML_Subscriber_Template);
 
             // Get today date in ISO 8601 date in string format.
             DateTime TodayDateTime = DateTime.UtcNow;
@@ -479,7 +807,7 @@ namespace GPL.UnitTests
             string subscriberID = null;
 
             if (string.IsNullOrEmpty(subscriberID))
-                subscriberID = Utility.RandomString(10);
+                subscriberID = PoppuloAPIClient.RandomString(10);
 
             // Start replacing the template with values.
 
@@ -507,6 +835,13 @@ namespace GPL.UnitTests
             MySubscriber.Replace("{date_of_birth}", TodayDateTime_ISO_8601);
             MySubscriber.Replace("{employee_start_date}", TodayDateTime_ISO_8601);
             MySubscriber.Replace("{region}", "region_Value");
+
+            // Set the custom_fields.
+            MySubscriber.Replace("{Employee Type}", "Employee Type_Value");
+            MySubscriber.Replace("{Full / Part Time}", "Full / Part Time_Value");
+            MySubscriber.Replace("{Level}", "Level_Value");
+            MySubscriber.Replace("{People Manager}", "false");
+
 
             XmlDocument MyXMLSubscriber = new XmlDocument();
             MyXMLSubscriber.LoadXml(MySubscriber.ToString());
@@ -545,7 +880,7 @@ namespace GPL.UnitTests
         public void TM_0160_Synchronize_Employees()
         {
             //Create a new instance of the PoppuloAPIClient class.
-            PoppuloAPIClient PC = new PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // Set the connection string and the stored procedure to get Employees data
             PC.ConnectionStringForDataSource = CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE;
@@ -580,6 +915,45 @@ namespace GPL.UnitTests
             HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Accepted };
 
             Assert.IsTrue(ExpectedHttpStatusCodes.Contains(PC.LastHttpStatusCode));
+        }
+
+        //[TestMethod]
+        //public void TM_0200_GetUltiSafeSecret()
+        //{
+        //    // Get the Ulti Safe Secret.
+        //    string strSafeSecret = PoppuloAPIClient.GetUltiSafeSecret(url, appId, userId, secretPath);
+
+        //    // Extract Sensitive data from the secret.
+        //    string POPPULO_WEB_API_BASE_URL = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_WEB_API_BASE_URL");
+        //    string POPPULO_ACCOUNTCODE = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_ACCOUNTCODE");
+        //    string POPPULO_USERNAME = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_USERNAME");
+        //    string POPPULO_PASSWORD = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_PASSWORD");
+
+        //    Assert.IsFalse(string.IsNullOrEmpty(strSafeSecret));
+        //    Assert.IsFalse(string.IsNullOrEmpty(POPPULO_WEB_API_BASE_URL));
+        //    Assert.IsFalse(string.IsNullOrEmpty(POPPULO_ACCOUNTCODE));
+        //    Assert.IsFalse(string.IsNullOrEmpty(POPPULO_USERNAME));
+        //    Assert.IsFalse(string.IsNullOrEmpty(POPPULO_PASSWORD));
+        //}
+
+        [TestMethod]
+        public void TM_0210_SynchronizeDataSourceAsTags()
+        {
+            //Create a new instance of the PoppuloAPIClient class.
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Set the connection string and the stored procedure to get Employees data
+            PC.ConnectionStringForDataSource = CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE;
+            PC.StoredProcedureNameForDataSource = STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE;
+
+            //Execute the method.
+            var MyRetVal = PC.SynchronizeDataSourceAsTags();
+
+            Type ExpectedType = typeof(System.Collections.Generic.List<string>);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            Assert.IsTrue(MyRetVal.Count > 0);
         }
 
     }
