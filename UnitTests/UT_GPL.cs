@@ -255,7 +255,7 @@ namespace GPL.UnitTests
             Assert.AreEqual("A,B,C,D", R);
 
             // Test the overload.
-            R = L.ToCSV('|'); // pasing optional parameter separator.
+            R = L.ToCSV("|"); // pasing optional parameter separator.
 
             Assert.AreEqual("A|B|C|D", R);
         }

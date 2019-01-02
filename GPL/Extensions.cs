@@ -41,14 +41,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Web.UI;
 using System.Xml;
 using System.Xml.Serialization;
@@ -522,23 +520,16 @@ namespace GPL
         }
 
         /// <summary>
-        /// Get the CSV Comma Separated Value replesentation of this IEnumerable<T>.
+        /// Get the CSV Comma Separated Value representation of this IEnumerable<T>.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="separator">The separator.</param>
         /// <returns></returns>
-        public static string ToCSV<T>(this IEnumerable<T> instance, char separator = ',')
+        public static string ToCSV<T>(this IEnumerable<T> instance, string separator = ",")
         {
-            // TODO review there is other ToCSV maybe could unify.
-            StringBuilder csv;
-            if (instance != null && instance.Count() != 0)
-            {
-                csv = new StringBuilder();
-                instance.Each(value => csv.AppendFormat("{0}{1}", value, separator));
-                return csv.ToString(0, csv.Length - 1);
-            }
-            return null;
+        return String.Join(separator, instance);
         }
 
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
