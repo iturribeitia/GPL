@@ -37,10 +37,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PoppuloAPI;
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace GPL.UnitTests
@@ -57,7 +60,9 @@ namespace GPL.UnitTests
         Y29uc3Qgc3RyaW5nIFBPUFBVTE9fV0VCX0FQSV9CQVNFX1VSTCA9IEAiaHR0cHM6Ly9hcGkudXMubmV3c3dlYXZlci5jb20vdjIvIjsNCiAgICAgICAgY29uc3Qgc3RyaW5nIFBPUFBVTE9fQUNDT1VOVENPREUgPSBAInVsdGltYXRlYXBpdGVzdCI7DQogICAgICAgIGNvbnN0IHN0cmluZyBQT1BQVUxPX1VTRVJOQU1FID0gQCJhZC1hcGkyQHVsdGltYXRlc29mdHdhcmUuY29tIjsNCiAgICAgICAgY29uc3Qgc3RyaW5nIFBPUFBVTE9fUEFTU1dPUkQgPSBAImVmZEd5UnRzZnRkWjNoTDIiOw==
         */
 
-        const string CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE = @"Server=FL1MUSGDBCL01\IETL;Database=ETLDB;Trusted_Connection=True;";
+        //const string CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE = @"Server=FL1MUSGDBCL01\IETL;Database=ETLDB;Trusted_Connection=True;";
+        const string CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE = @"Server=FL1CTDMSDBCL1\HULK_IETL;Database=ETLDB;Trusted_Connection=True;";
+
         //const string STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE = @"[ETLDB].[Poppulo].[usp_Ultimate_Employee_To_Poppulo_Sel]";
         const string STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE = @"[ETLDB].[Poppulo].[usp_Ultimate_Employee_To_Poppulo_Sel_With_Tags]";
 
@@ -123,7 +128,7 @@ namespace GPL.UnitTests
 
         //
         [TestMethod]
-        public void TM_0060_PoppuloAPIClient_Constructor_Using_HTTP()
+        public async Task TM_0060_PoppuloAPIClient_Constructor_Using_HTTP()
         {
             // replace the HTTPS by HTTP to check if it is possible to authenticate over http.
             var HTTP_POPPULO_WEB_API_BASE_URL = Regex.Replace(POPPULO_WEB_API_BASE_URL, "https", "http", RegexOptions.IgnoreCase);
@@ -132,14 +137,20 @@ namespace GPL.UnitTests
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(HTTP_POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD);
 
             // Now do a GET operation to verify if it is possible over http not https.
-            string Myresults = PC.GetAccount();
+            string Myresult = await PC.GetAccountAsync();
 
-            // Assert by ExpectedHttpStatusCodes
+            // Check the returned object type.
+
+            Type ExpectedType = typeof(string);
+            Assert.IsInstanceOfType(Myresult, ExpectedType);
+
+            //Assert.IsTrue(Myresult.Contains(@"<code>500</code>"));
+
+            //Assert.IsTrue(PoppuloAPIClient.IsXML(Myresult));
+
+            Assert.IsTrue(string.IsNullOrEmpty(Myresult));
 
 
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.NotFound, HttpStatusCode.Forbidden, HttpStatusCode.InternalServerError };
-
-            Assert.IsTrue(ExpectedHttpStatusCodes.Contains(PC.LastHttpStatusCode));
         }
         //
 
@@ -152,137 +163,89 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void TM_0080_GetAccount_OK()
+        public async Task TM_0080_GetAccountAsync_Account_Exist_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // Execute the method.
-            string Myresults = PC.GetAccount();
+            string Myresults = await PC.GetAccountAsync();
 
             Type expectedType = typeof(string);
-            Assert.IsInstanceOfType(Myresults, expectedType);     //passes
-            Assert.AreEqual(200, (int)PC.LastHttpStatusCode);
-            Assert.AreEqual(HttpStatusCode.OK, PC.LastHttpStatusCode);
-            Assert.AreEqual(@"OK", PC.LastHttpStatusDescription);
+            Assert.IsInstanceOfType(Myresults, expectedType);
+
+#if ULTISAFE_PRODUCTION
+            Assert.IsTrue(Myresults.Contains(@"<name>Ultimate Software</name>"));
+#else
             Assert.IsTrue(Myresults.Contains(@"<name>Ultimate Software API Test Account</name>"));
+#endif
             Assert.IsTrue(PoppuloAPIClient.IsXML(Myresults));
 
         }
 
         [TestMethod]
-        public void TM_0090_ListAccount_OK()
+        public async Task TM_0090_ListAccountsAsync_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // Execute the method.
-            string MyRetVal = PC.ListAccount();
+            var MyRetVal = await PC.ListAccountsAsync();
 
-
-            // Assert by ExpectedValues
-            string[] ExpectedValues = new[] { @"<accounts total=" };
-
-
-            Type ExpectedType = typeof(string);
-
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);     //passes
-
-            bool ExpectedValueFound = false;
-
-            foreach (var item in ExpectedValues)
-            {
-                if (MyRetVal.Contains(item))
-                {
-                    ExpectedValueFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
-        }
-
-        [TestMethod]
-        public void TM_0091_ListTags_OK()
-        {
-            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
-            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
-
-            // Execute the method.
-            string MyRetVal = PC.ListTags();
-
-
-            // Assert by ExpectedValues
-            string[] ExpectedAnyOfThisValues = new[] { @"<tags total=" };
-
-
-            Type ExpectedType = typeof(string);
+            Type ExpectedType = typeof(List<XmlNode>);
 
             Assert.IsInstanceOfType(MyRetVal, ExpectedType);
-
-            bool ExpectedAnyOfTheValueFound = false;
-
-            foreach (var item in ExpectedAnyOfThisValues)
-            {
-                if (MyRetVal.Contains(item))
-                {
-                    ExpectedAnyOfTheValueFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedAnyOfTheValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
         }
 
         [TestMethod]
-        public void TM_0092_GetTag_OK()
+        public async Task TM_0100_ListTagsAsync_Async()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Execute the method.
+            var MyRetVal = await PC.ListTagsAsync(20);
+
+
+            Type ExpectedType = typeof(List<XmlNode>);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+        }
+
+        [TestMethod]
+        public async Task TM_0105_ListSubscribersAsync_Async()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Execute the method.
+            var MyRetVal = await PC.ListSubscribersAsync(3000);
+
+            Type ExpectedType = typeof(List<XmlNode>);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+        }
+
+#if !ULTISAFE_PRODUCTION
+        [TestMethod]
+        public async Task TM_0110_GetTagAsync_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // first create the unit test tag.
-            PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Description");
+            string MyRetVal = await PC.CreateTagAsync(@"Tag_For_Unit_Test Name", @"Tag_For_Unit_Test Description");
 
             // Execute the method.
-            string MyRetVal = PC.GetTag(@"Tag_For_Unit_Test_Name");
+            MyRetVal = await PC.GetTagAsync(@"Tag_For_Unit_Test Name");
+
+            // Assert by Type
+            Type ExpectedType = typeof(string);
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             // Assert by ExpectedValues
             string[] ExpectedAnyOfThisValues = new[] { @"<tag name=" };
 
-            Type ExpectedType = typeof(string);
-
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
-
             bool ExpectedAnyOfTheValueFound = false;
 
             foreach (var item in ExpectedAnyOfThisValues)
@@ -295,45 +258,33 @@ namespace GPL.UnitTests
             }
             Assert.IsTrue(ExpectedAnyOfTheValueFound);
 
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
 
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
-            PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+            MyRetVal = await PC.DeleteTagAsync(@"Tag_For_Unit_Test Name");
 
         }
+#endif
+
+
+#if !ULTISAFE_PRODUCTION
 
         [TestMethod]
-        public void TM_0093_CreateTag_OK()
+        public async Task TM_0120_CreateTagAsync_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // Delete the tag first if it exist.
-            string MyRetVal = PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+            string MyRetVal = await PC.DeleteTagAsync(@"Name Tag_For_Unit&Test");
 
             // Execute the method.
-            MyRetVal = PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Name");
+            MyRetVal = await PC.CreateTagAsync(@"Name Tag_For_Unit&Test", @"Description Tag_For_Unit&Test");
 
+            // Assert by Type
+            Type ExpectedType = typeof(string);
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             // Assert by ExpectedValues
             string[] ExpectedAnyOfThisValues = new[] { @"<code>201</code><resources_created>" };
-
-
-            Type ExpectedType = typeof(string);
-
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             bool ExpectedAnyOfTheValueFound = false;
 
@@ -347,37 +298,23 @@ namespace GPL.UnitTests
             }
             Assert.IsTrue(ExpectedAnyOfTheValueFound);
 
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Created };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
             // Delete the tag first if it exist.
-            PC.DeleteTag(@"Tag_For_Unit_Test_Name");
-
+            MyRetVal = await PC.DeleteTagAsync(@"Name Tag_For_Unit&Test");
         }
+#endif
 
+#if !ULTISAFE_PRODUCTION
         [TestMethod]
-        public void TM_0094_UpdateTag_OK()
+        public async Task TM_0130_UpdateTagAsync_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // first create the unit test tag.
-            string MyRetVal = PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Description");
+            string MyRetVal = await PC.CreateTagAsync(@"Tag_For_Unit_Test Name", @"Tag_For_Unit_Test Description");
 
             // Execute the method.
-            MyRetVal = PC.UpdateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Name_Updated", @"Tag_For_Unit_Test_Description_Updated");
+            MyRetVal = await PC.UpdateTagAsync(@"Tag_For_Unit_Test Name", @"Tag_For_Unit_Test Name_Updated", @"Tag_For_Unit_Test_Description_Updated");
 
             // Assert by ExpectedValues
             string[] ExpectedAnyOfThisValues = new[] { @"<code>200</code><resources_updated>" };
@@ -398,35 +335,23 @@ namespace GPL.UnitTests
             }
             Assert.IsTrue(ExpectedAnyOfTheValueFound);
 
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
-            MyRetVal = PC.DeleteTag(@"Tag_For_Unit_Test_Name_Updated");
+            MyRetVal = await PC.DeleteTagAsync(@"Tag_For_Unit_Test Name_Updated");
         }
+#endif
 
+
+#if !ULTISAFE_PRODUCTION
         [TestMethod]
-        public void TM_0095_DeleteTag_OK()
+        public async Task TM_0140_DeleteTagAsync_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
             // first create the unit test tag.
-            string MyRetVal = PC.CreateTag(@"Tag_For_Unit_Test_Name", @"Tag_For_Unit_Test_Description");
+            string MyRetVal = await PC.CreateTagAsync(@"Tag_For_Unit_Test Name", @"Tag_For_Unit_Test Description");
 
             // Execute the method.
-            MyRetVal = PC.DeleteTag(@"Tag_For_Unit_Test_Name");
+            MyRetVal = await PC.DeleteTagAsync(@"Tag_For_Unit_Test Name");
 
             // Assert by ExpectedValues
             string[] ExpectedAnyOfThisValues = new[] { @"<code>200</code><resources_deleted>" };
@@ -447,38 +372,148 @@ namespace GPL.UnitTests
                 }
             }
             Assert.IsTrue(ExpectedAnyOfTheValueFound);
+        }
+#endif
 
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
+#if !ULTISAFE_PRODUCTION
 
-            bool ExpectedHttpStatusCodeFound = false;
+        [TestMethod]
+        public async Task TM_0241_DeleteAPICreatedTagsAsync()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
 
-            foreach (var item in ExpectedHttpStatusCodes)
+            // Set the connection string and the stored procedure to get Employees data
+            PC.ConnectionStringForDataSource = CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE;
+            PC.StoredProcedureNameForDataSource = STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE;
+
+            // first create the tags.
+            List<string> MyRetVal = await PC.SynchronizeDataSourceAsTagsAsync();
+
+            //Type ExpectedType = typeof(List<string>);
+
+            //Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            // Execute the method.
+
+            List<Task> MyRetVal2 = await PC.DeleteAPICreatedTagsAsync(500, 50);
+
+
+            Type ExpectedType = typeof(List<Task>);
+
+            Assert.IsInstanceOfType(MyRetVal2, ExpectedType);
+
+            Assert.IsTrue(MyRetVal.Count == MyRetVal2.Count);
+
+
+            // Check that all tasks finalize ok
+
+            foreach (Task<HttpResponseMessage> t in MyRetVal2)
             {
-                if (PC.LastHttpStatusCode.Equals(item))
+                // Check the task
+                Assert.IsTrue(t.IsCompleted);
+                Assert.IsFalse(t.IsCanceled);
+                Assert.IsFalse(t.IsFaulted);
+                Assert.IsTrue(t.Status.Equals(TaskStatus.RanToCompletion));
+
+                // Check the retuning
+                Assert.IsTrue(t.Result.IsSuccessStatusCode);
+                Assert.IsTrue(t.Result.StatusCode.Equals(HttpStatusCode.OK));
+            }
+
+        }
+#endif
+
+#if !ULTISAFE_PRODUCTION
+        [TestMethod]
+        public async Task TM_0150_CreateSubscriberTagAsync_Async()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // first create the unit test tag.
+            string MyRetVal = await PC.CreateTagAsync(@"Tag_For_Unit_Test Name", @"Tag_For_Unit_Test Description");
+
+            // Execute the method.
+            MyRetVal = await PC.CreateSubscriberTagAsync(@"testsubscriber01@testdomain.com", @"Tag_For_Unit_Test Name");
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<code>201</code><resources_created>", @"<code>409</code>" };
+
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
                 {
-                    ExpectedHttpStatusCodeFound = true;
+                    ExpectedAnyOfTheValueFound = true;
                     break;
                 }
             }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            MyRetVal = await PC.DeleteTagAsync(@"Tag_For_Unit_Test Name");
         }
+#endif
+
+#if !ULTISAFE_PRODUCTION
+        [TestMethod]
+        public async Task TM_0160_RemoveSubscriberTagAsync_Async()
+        {
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // first create the unit test tag.
+            string MyRetVal = await PC.CreateTagAsync(@"Tag_For_Unit_Test Name", @"Tag_For_Unit_Test Description");
+
+            MyRetVal = await PC.CreateSubscriberTagAsync(@"testsubscriber01@testdomain.com", @"Tag_For_Unit_Test Name");
+
+            MyRetVal = await PC.RemoveSubscriberTagAsync(@"testsubscriber01@testdomain.com", @"Tag_For_Unit_Test Name");
+
+            // Assert by ExpectedValues
+            string[] ExpectedAnyOfThisValues = new[] { @"<code>200</code>", @"<code>404</code>" };
+
+
+            Type ExpectedType = typeof(string);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            bool ExpectedAnyOfTheValueFound = false;
+
+            foreach (var item in ExpectedAnyOfThisValues)
+            {
+                if (MyRetVal.Contains(item))
+                {
+                    ExpectedAnyOfTheValueFound = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(ExpectedAnyOfTheValueFound);
+
+            MyRetVal = await PC.DeleteTagAsync(@"Tag_For_Unit_Test Name");
+        }
+#endif
 
         [TestMethod]
-        public void TM_0100_GetAccount_Account_No_Exist()
+        public async Task TM_0081_GetAccountAsync_Account_No_Exist_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid AccountCode parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, "CheckNoexist" + POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.GetAccount();
+            string MyRetVal = await PC.GetAccountAsync();
 
             string[] ExpectedValues = new[] { @"<status><code>403</code>" };
 
 
             Type ExpectedType = typeof(string);
 
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);     //passes
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             bool ExpectedValueFound = false;
 
@@ -492,41 +527,24 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Forbidden };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
         }
 
         [TestMethod]
-        public void TM_0110_GetSubscriberByEmail()
+        public async Task TM_0180_GetSubscriberByEmailAsync_Exist_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.GetSubscriberByEmail(@"testsubscriber01@testdomain.com");
+            string MyRetVal = await PC.GetSubscriberByEmailAsync(@"testsubscriber01@testdomain.com");
             //string MyRetVal = PC.GetSubscriberByEmail(@"TEST_20180607_01@ultimatesoftware.com");
-
-
 
             string[] ExpectedValues = new[] { @"<email>testsubscriber01@testdomain.com</email>" };
 
 
             Type ExpectedType = typeof(string);
 
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);     //passes
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             bool ExpectedValueFound = false;
 
@@ -540,31 +558,16 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
         }
 
         [TestMethod]
-        public void TM_0111_GetSubscriberByexternal_id_DoNotExists()
+        public async Task TM_0190_GetSubscriberByExternal_idAsync_No_Exists_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.GetSubscriberByExternal_id(@"xxxSomeValue", SubscriberStatus.all);
+            string MyRetVal = await PC.GetSubscriberByExternal_idAsync(@"xxxSomeValue", SubscriberStatus.all);
 
             string[] ExpectedValues = new[] { @"<totalResults>0</totalResults>" };
 
@@ -584,31 +587,16 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
         }
 
         [TestMethod]
-        public void TM_0112_GetSubscriberByexternal_id_Exists()
+        public async Task TM_0200_GetSubscriberByExternal_idAsync_Exists_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.GetSubscriberByExternal_id(@"SomeValue", SubscriberStatus.all);
+            string MyRetVal = await PC.GetSubscriberByExternal_idAsync(@"SomeValue", SubscriberStatus.all);
 
             // Verify the returned type
             Type ExpectedType = typeof(string);
@@ -632,21 +620,6 @@ namespace GPL.UnitTests
 
             Assert.IsTrue(ExpectedValueFound);
 
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.OK };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(MyRetVal);
 
@@ -662,15 +635,14 @@ namespace GPL.UnitTests
 
         }
 
-
         [TestMethod]
-        public void TM_0120_GetSubscriberByEmail_NoExist()
+        public async Task TM_0181_GetSubscriberByEmailAsync_No_Exist_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.GetSubscriberByEmail(@"NoExist@testdomain.com");
+            string MyRetVal = await PC.GetSubscriberByEmailAsync(@"NoExist@testdomain.com");
 
             string[] ExpectedValues = new[] { @"<status><code>404</code>" }; //No Found.
 
@@ -691,25 +663,10 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.NotFound };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
         }
 
         [TestMethod]
-        public void TM_0130_ListSubscriberPermissionsByEmail_OK()
+        public async Task TM_0220_ListSubscriberPermissionsByEmail_OK_Async()
         {
             // todo review this test why API account does not have access and return 403.
 
@@ -717,14 +674,14 @@ namespace GPL.UnitTests
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.ListSubscriberPermissionsByEmail(@"testsubscriber01@testdomain.com");
+            string MyRetVal = await PC.ListSubscriberPermissionsByEmailAsync(@"testsubscriber01@testdomain.com");
 
             string[] ExpectedValues = new[] { @"<status><code>403</code>", @"<status><code>404</code>" };
 
 
             Type ExpectedType = typeof(string);
 
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);     //passes
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             bool ExpectedValueFound = false;
 
@@ -738,38 +695,22 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Forbidden, HttpStatusCode.NotFound };
-
-            bool ExpectedHttpStatusCodeFound = false;
-
-            foreach (var item in ExpectedHttpStatusCodes)
-            {
-                if (PC.LastHttpStatusCode.Equals(item))
-                {
-                    ExpectedHttpStatusCodeFound = true;
-                    break;
-                }
-            }
-            Assert.IsTrue(ExpectedHttpStatusCodeFound);
-
         }
 
         [TestMethod]
-        public void TM_0140_ListSubscriberPermissionsByEmail_NoExist()
+        public async Task TM_0230_ListSubscriberPermissionsByEmail_No_Exist_Async()
         {
             // Create a new instance of the PoppuloAPIClient class. (Invalid Password parameter)
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
 
             // Execute the method.
-            string MyRetVal = PC.ListSubscriberPermissionsByEmail(@"NoExist@testdomain.com");
+            string MyRetVal = await PC.ListSubscriberPermissionsByEmailAsync(@"NoExist@testdomain.com");
 
             string[] ExpectedValues = new[] { @"<status><code>403</code>", @"<status><code>404</code>" };
 
             Type ExpectedType = typeof(string);
 
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);     //passes
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             bool ExpectedValueFound = false;
 
@@ -783,16 +724,11 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes ++++
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.NotFound, HttpStatusCode.Forbidden };
-
-            Assert.IsTrue(ExpectedHttpStatusCodes.Contains(PC.LastHttpStatusCode));
-
         }
 
+#if !ULTISAFE_PRODUCTION
         [TestMethod]
-        public void TM_0150_CreateSubscriber()
+        public async Task TM_0240_CreateSubscriberAsync()
         {
             // Create a instance on the PoppuloAPIClient.
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true);
@@ -847,13 +783,13 @@ namespace GPL.UnitTests
             MyXMLSubscriber.LoadXml(MySubscriber.ToString());
 
             // Call the API
-            string MyRetVal = PC.CreateSubscriber(MyXMLSubscriber);
+            string MyRetVal = await PC.CreateSubscriberAsync(MyXMLSubscriber);
 
 
 
             Type ExpectedType = typeof(string);
 
-            Assert.IsInstanceOfType(MyRetVal, ExpectedType);     //passes
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
 
             bool ExpectedValueFound = false;
 
@@ -869,15 +805,12 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Assert by ExpectedHttpStatusCodes 
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Created };
-
-            Assert.IsTrue(ExpectedHttpStatusCodes.Contains(PC.LastHttpStatusCode));
         }
+#endif
 
+#if !ULTISAFE_PRODUCTION
         [TestMethod]
-        public void TM_0160_Synchronize_Employees()
+        public async Task TM_0250_Synchronize_EmployeesAsync()
         {
             //Create a new instance of the PoppuloAPIClient class.
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
@@ -887,16 +820,14 @@ namespace GPL.UnitTests
             PC.StoredProcedureNameForDataSource = STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE;
 
             //Execute the method.
-            PC.SynchronizeDataSourceAsSubscribers();
-
-            string MyRetVal = PC.LastHttpWebResponseStream;
-
-            // Set the expected values & types. 
-            string[] ExpectedValues = new[] { @"<status><code>202</code>" };
+            var MyRetVal = await PC.SynchronizeDataSourceAsSubscribersAsync();
 
             Type ExpectedType = typeof(string);
 
             Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            // Set the expected values & types. 
+            string[] ExpectedValues = new[] { @"<status><code>202</code>" };
 
             bool ExpectedValueFound = false;
 
@@ -910,18 +841,15 @@ namespace GPL.UnitTests
             }
 
             Assert.IsTrue(ExpectedValueFound);
-
-            // Set the expected HttpStatusCodes.
-            HttpStatusCode[] ExpectedHttpStatusCodes = new[] { HttpStatusCode.Accepted };
-
-            Assert.IsTrue(ExpectedHttpStatusCodes.Contains(PC.LastHttpStatusCode));
         }
+#endif
+
 
         //[TestMethod]
-        //public void TM_0200_GetUltiSafeSecret()
+        //public async Task TM_0005_GetUltiSafeSecretAsync()
         //{
         //    // Get the Ulti Safe Secret.
-        //    string strSafeSecret = PoppuloAPIClient.GetUltiSafeSecret(url, appId, userId, secretPath);
+        //    string strSafeSecret = await PoppuloAPIClient.GetUltiSafeSecretAsync(url, appId, userId, secretPath);
 
         //    // Extract Sensitive data from the secret.
         //    string POPPULO_WEB_API_BASE_URL = PoppuloAPIClient.GetValueFromJSON(strSafeSecret, "POPPULO_WEB_API_BASE_URL");
@@ -936,8 +864,34 @@ namespace GPL.UnitTests
         //    Assert.IsFalse(string.IsNullOrEmpty(POPPULO_PASSWORD));
         //}
 
+#if !ULTISAFE_PRODUCTION
+
         [TestMethod]
-        public void TM_0210_SynchronizeDataSourceAsTags()
+        public async Task TM_0242_SynchronizeDataSourceAsTags_Async()
+        {
+            //Create a new instance of the PoppuloAPIClient class.
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Set the connection string and the stored procedure to get Employees data
+            PC.ConnectionStringForDataSource = CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE;
+            PC.StoredProcedureNameForDataSource = STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE;
+
+            // First DeleteAPICreatedTagsAsync
+            List<Task> MyRetVal1 = await PC.DeleteAPICreatedTagsAsync(500, 10);
+
+            //Execute the method.
+            var MyRetVal = await PC.SynchronizeDataSourceAsTagsAsync();
+
+            Type ExpectedType = typeof(System.Collections.Generic.List<string>);
+
+            Assert.IsInstanceOfType(MyRetVal, ExpectedType);
+
+            Assert.IsTrue(MyRetVal.Count > 0);
+        }
+#endif
+
+        [TestMethod]
+        public async Task TM_9999_GetTagsNamesFromDataSourceAsync()
         {
             //Create a new instance of the PoppuloAPIClient class.
             PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
@@ -947,7 +901,7 @@ namespace GPL.UnitTests
             PC.StoredProcedureNameForDataSource = STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE;
 
             //Execute the method.
-            var MyRetVal = PC.SynchronizeDataSourceAsTags();
+            var MyRetVal = await PC.GetTagsNamesFromDataSourceAsync();
 
             Type ExpectedType = typeof(System.Collections.Generic.List<string>);
 
@@ -955,6 +909,112 @@ namespace GPL.UnitTests
 
             Assert.IsTrue(MyRetVal.Count > 0);
         }
+
+
+        // GetTagsNamesFromDataSource
+
+#if !ULTISAFE_PRODUCTION
+        [TestMethod]
+        public async Task CleanUpPoppuloDataAsync()
+        {
+            // Get the tags from populo
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Execute the method.
+
+            /*
+            var MyRetVal = PC.ListTags(50);
+
+            // Loop TagNodes
+            foreach (XmlNode Ntag in MyRetVal)
+            {
+                if (Ntag.Attributes != null && Ntag.Attributes["name"] != null)
+                {
+                    Debug.WriteLine(Ntag.Attributes["name"].Value);
+
+                    // Delete the tag and it will remove from each subscriber too.
+
+                    //PC.DeleteTag(Ntag.Attributes["name"].Value);
+                }
+            }
+            */
+
+            // Get all the subscribers and clean it up.
+
+            List<XmlNode> ListSubscribers = await PC.ListSubscribersAsync(500);
+
+            // Now get the Subscriber
+            // {Attribute, Name="uri", Value="https://api.us.newsweaver.com/v2/ultimateapitest/subscriber/1s56ajs5x9d"}
+
+            foreach (XmlNode NodeSubscribers in ListSubscribers)
+            {
+                if (NodeSubscribers.Attributes != null && NodeSubscribers.Attributes["uri"] != null)
+                {
+                    Debug.WriteLine(NodeSubscribers.Attributes["uri"].Value);
+
+                    // TODO clean the Subscriber with empty data.
+                }
+
+            }
+        }
+#endif
+
+#if !ULTISAFE_PRODUCTION
+        [TestMethod]
+        public async Task Experiment_SyncronizeSubscriberstDeletingtagsfirstAsync()
+        {
+            // TODO this is an experiment
+
+            List<Task> tasks = new List<Task>();
+
+            // Create a new instance of the PoppuloAPIClient class. (No errors expected for this Unit Test method.)
+            PoppuloAPIClient PC = new PoppuloAPI.PoppuloAPIClient(POPPULO_WEB_API_BASE_URL, POPPULO_ACCOUNTCODE, POPPULO_USERNAME, POPPULO_PASSWORD, true, true);
+
+            // Set the connection string and the stored procedure to get Employees data
+            PC.ConnectionStringForDataSource = CONNECTION_STRING_FOR_EMPLOYEES_DATASOURCE;
+            PC.StoredProcedureNameForDataSource = STORED_PROCEDURE_NAME_FOR_EMPLOYEES_DATASOURCE;
+
+            // Get the data source
+            tasks.Add(PC.GetDataSourceAsync());
+
+            // Delete the tags
+            tasks.Add(PC.DeleteAPICreatedTagsAsync(500, 50));
+
+
+            // Wait until the end of all tasks
+            Task.WaitAll(tasks.ToArray());
+
+            List<string> t3 = await PC.SynchronizeDataSourceAsTagsAsync(50);
+
+            // Synchronize the subscribers
+            string r = await PC.SynchronizeDataSourceAsSubscribersAsync();
+
+        }
+#endif
+#if !ULTISAFE_PRODUCTION
+        [TestMethod]
+        public async Task Experiment_WithHttpClient()
+        {
+            // some test with the httpclient
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, @"https://www.google.com")
+                {
+                    //Content = content
+                };
+
+                // Make the request to get the client_token.
+                using (HttpResponseMessage r = await httpClient.SendAsync(request))
+                {
+                    using (HttpContent c = r.Content)
+                    {
+                        string MyReturn = await c.ReadAsStringAsync();
+                    }
+                }
+            }
+        }
+#endif
 
     }
 }

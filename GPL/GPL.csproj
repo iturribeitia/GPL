@@ -60,6 +60,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GenericParserAdapterII.cs" />
     <Compile Include="IGenericParserAdapterII.cs" />
+    <Compile Include="LimitedConcurrencyLevelTaskScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>

@@ -39,15 +39,21 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
+
+// https://www.codeguru.com/csharp/.net/net_general/article.php/c4643/Giving-a-NET-Assembly-a-Strong-Name.htm
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("KeyFile.snk")]
 
 namespace PoppuloAPI
 {
@@ -64,6 +70,11 @@ namespace PoppuloAPI
         /// Hold the Base64 encoded credential using the UserName and Password.
         /// </summary>
         private String _Credentials = string.Empty;
+
+        /// <summary>
+        /// HttpClient to make request to any end point.
+        /// </summary>
+        private HttpClient _httpClient;
 
         /// <summary>
         /// Hold the Data to use for Subscribers sync.
@@ -143,19 +154,19 @@ namespace PoppuloAPI
 ";
 
         /// <summary>
+        /// Template to create a Tag.
+        /// </summary>
+        private const string _XML_Subscriber_Tag_Template = @"<tag uri=""https://api.newsweaver.com/v2/{AccountCode}/tag/{tagName}""></tag>";
+
+        /// <summary>
         /// Constant with the User Agent value.
         /// </summary>
         private const string USERAGENT = "Ultimate Software";
 
-        /// <summary>
-        /// Constant to define the number of retries when Service is responding Service Unavailable.
-        /// </summary>
-        private const int RetriesWhenServiceIsRespondingServiceUnavailable = 10;
-
-        /// <summary>
-        /// Constant to define the milliseconds to wait when service is responding Service Unavailable
-        /// </summary>
-        private const int MillisecondsWaitWhenServiceIsRespondingServiceUnavailable = 6000;
+        private readonly Encoding PoppuloBodyDataEncoding = Encoding.UTF8;
+        private const string PoppuloBodyDataMediaType = @"application/xml";
+        private const int PoppuloAttemptsForHTTPRequests = 5;
+        private const int PoppuloWaitMillisecondsForNextAttempt = 6000;
 
         /// <summary>
         /// Get Set the Base URL of the Poppulo end point.
@@ -202,7 +213,6 @@ namespace PoppuloAPI
         /// </summary>
         public DataTable DataSource { get { return _DataSource; } }
 
-
         /// <summary>
         /// Get a string XML that represent a Subscriber Entity (https://developer.poppulo.com/api-entities/api-subscriber.html)
         /// You must to replace the {Values} with your values before to use it.
@@ -222,29 +232,10 @@ namespace PoppuloAPI
         public static string XML_Tag_Template { get { return _XML_Tag_Template.Replace(@"^^", (Convert.ToChar(93)).ToString() + (Convert.ToChar(93)).ToString()); } }
 
         /// <summary>
-        /// Get the last StatusCode from the last HttpWebResponse
+        /// Get a string XML that represent a Tag Entity (https://developer.poppulo.com/api-entities/api-tag.html)
+        /// You must to replace the {Values} with your values before to use it.
         /// </summary>
-        public HttpStatusCode LastHttpStatusCode { get; private set; }
-
-        /// <summary>
-        /// Get the last StatusDescription from the last HttpWebResponse
-        /// </summary>
-        public string LastHttpStatusDescription { get; private set; }
-
-        /// <summary>
-        /// Get the last stream from the HttpWebResponse.
-        /// </summary>
-        public string LastHttpWebResponseStream { get; private set; }
-
-        /// <summary>
-        /// Get the las stream from the HttpWebRequest.
-        /// </summary>
-        public string LastHttpWebRequestStream { get; private set; }
-
-        /// <summary>
-        /// Get the las httpVerb from the HttpWebRequest.
-        /// </summary>
-        public HttpVerb LastHttpVerb { get; private set; }
+        public static string XML_Subscriber_Tag_Template { get { return _XML_Subscriber_Tag_Template.Replace(@"^^", (Convert.ToChar(93)).ToString() + (Convert.ToChar(93)).ToString()); } }
 
         /// <summary>
         /// Get the SubscriberImportLink of the last CreateSubscriberImportJob execution.
@@ -305,47 +296,106 @@ namespace PoppuloAPI
             CompressContent = compressContent;
             KeepRequestAlive = keepRequestAlive;
 
+
             // encode the credentials for authentication.
             _Credentials = Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(UserName + ":" + Password));
+
+            if (compressContent)
+            {
+                HttpClientHandler handler = new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                };
+
+                _httpClient = new HttpClient(handler);
+            }
+            else
+            {
+                _httpClient = new HttpClient();
+
+            }
+
+            SetDefaultRequestHeadersForPoppulo();
         }
 
         /// <summary>
-        /// Get the Poppulo Account 
+        /// Set Default Request Headers For Poppulo end point.
+        /// </summary>
+        private void SetDefaultRequestHeadersForPoppulo()
+        {
+            // Set the _httpClient to work with Poppulo end point. 
+
+            // Clean all the DefaultRequestHeaders
+            _httpClient.DefaultRequestHeaders.Clear();
+
+            // Headers
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + _Credentials);
+
+            // UserAgent
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", USERAGENT);
+
+            // Encoder
+            _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("UTF8"));
+
+            if (CompressContent)
+            {
+                _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+            }
+
+            // ContentType
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(PoppuloBodyDataMediaType));
+
+            // KeepAlive
+            _httpClient.DefaultRequestHeaders.Add("Connection", KeepRequestAlive ? "keep-alive" : "close");
+
+            // Retry-After
+            _httpClient.DefaultRequestHeaders.Add("Retry-After", "10");
+        }
+
+        /// <summary>
+        /// Get the Poppulo Account
         /// </summary>
         /// <returns></returns>
-        public string GetAccount()
+        public async Task<string> GetAccountAsync()
         {
-            // https://api.newsweaver.com/v2/{account code}
+            // Documentation: https://developer.poppulo.com/api-calls/api-get-account.html
 
             string MyURL = BaseURL + AccountCode;
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.GET);
+            using (HttpResponseMessage response = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Get))
+            {
+                using (HttpContent content = response.Content)
+                {
+                    return await content.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
         /// List the Poppulo Accounts
         /// </summary>
-        /// <returns> a string representing a Poppulo Account List (https://developer.poppulo.com/api-entities/api-account-list.html)</returns>
-        public string ListAccount()
+        /// <param name="pageSize">Page Size</param>
+        /// <returns></returns>
+        public Task<List<XmlNode>> ListAccountsAsync(int? pageSize = null)
         {
-            string MyReturn = string.Empty;
+            // Documentation: https://developer.poppulo.com/api-calls/api-list-accounts.html
 
-            // https://api.newsweaver.com/v2/
-
-            return MakeHttpWebRequest(BaseURL.ToString(), HttpVerb.GET);
+            return GetListEntitiesAsync(BaseURL.ToString(), PoppuloListType.Accounts, pageSize);
         }
 
         /// <summary>
-        /// List the Poppulo Tags
+        /// List Tags
         /// </summary>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public string ListTags()
+        public Task<List<XmlNode>> ListTagsAsync(int? pageSize = null)
         {
-            // https://api.newsweaver.com/v2/{account code}/tags
+            // Documentation: https://developer.poppulo.com/api-calls/api-list-tags.html
 
             string MyURL = BaseURL + AccountCode + @"/tags";
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.GET);
+            return GetListEntitiesAsync(MyURL, PoppuloListType.Tags, pageSize);
         }
 
         /// <summary>
@@ -353,13 +403,19 @@ namespace PoppuloAPI
         /// </summary>
         /// <param name="tagName"></param>
         /// <returns></returns>
-        public string GetTag(string tagName)
+        public async Task<string> GetTagAsync(string tagName)
         {
-            // GET https://api.newsweaver.com/v2/{account code}/tag/{tag name}
+            // Documentation: https://developer.poppulo.com/api-calls/api-get-tag.html
 
             string MyURL = BaseURL + AccountCode + @"/tag/" + tagName;
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.GET);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Get))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -368,14 +424,10 @@ namespace PoppuloAPI
         /// <param name="tagName">Name of the tag</param>
         /// <param name="tagDescription">Description of the tag</param>
         /// <returns></returns>
-        public string CreateTag(string tagName, string tagDescription)
+        public async Task<string> CreateTagAsync(string tagName, string tagDescription)
         {
-            string MyReturn = string.Empty;
+            // Documentation: https://developer.poppulo.com/api-calls/api-create-tag.html
 
-            // Example:
-            // POST https://api.newsweaver.com/v2/{account code}/tags
-
-            //string MyURL = BaseURL + AccountCode + $"/subscribers/";
             string MyURL = BaseURL + AccountCode + @"/tags/";
 
             StringBuilder MyTag = new StringBuilder(PoppuloAPIClient.XML_Tag_Template);
@@ -383,10 +435,16 @@ namespace PoppuloAPI
             MyTag.Replace("{Name}", tagName);
             MyTag.Replace("{Description}", tagDescription);
 
-            XmlDocument xmlTag = new XmlDocument();
-            xmlTag.LoadXml(MyTag.ToString());
+            if (!PoppuloAPIClient.IsXML(MyTag.ToString()))
+                throw new Exception("XML for CreateTagAsync is not a XML document Please review.");
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.POST, xmlTag.InnerXml);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Post, bodyData: MyTag.ToString(), bodyDataEncoding: PoppuloBodyDataEncoding, bodyDataMediaType: PoppuloBodyDataMediaType))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -396,11 +454,9 @@ namespace PoppuloAPI
         /// <param name="newTagName">New tag name</param>
         /// <param name="newTagDescription">New tag description</param>
         /// <returns></returns>
-        public string UpdateTag(string tagName, string newTagName, string newTagDescription)
+        public async Task<string> UpdateTagAsync(string tagName, string newTagName, string newTagDescription)
         {
             // Documentation : https://developer.poppulo.com/api-calls/api-update-tag.html
-
-            string MyReturn = string.Empty;
 
             string MyURL = BaseURL + AccountCode + @"/tag/" + tagName;
 
@@ -409,10 +465,16 @@ namespace PoppuloAPI
             MyTag.Replace("{Name}", newTagName);
             MyTag.Replace("{Description}", newTagDescription);
 
-            XmlDocument xmlTag = new XmlDocument();
-            xmlTag.LoadXml(MyTag.ToString());
+            if (!PoppuloAPIClient.IsXML(MyTag.ToString()))
+                throw new Exception("XML for UpdateTagAsync is not a XML document Please review.");
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.PUT, xmlTag.InnerXml);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Put, bodyData: MyTag.ToString(), bodyDataEncoding: PoppuloBodyDataEncoding, bodyDataMediaType: PoppuloBodyDataMediaType))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -420,13 +482,19 @@ namespace PoppuloAPI
         /// </summary>
         /// <param name="tagName">Name of the tag</param>
         /// <returns></returns>
-        public string DeleteTag(string tagName)
+        public async Task<string> DeleteTagAsync(string tagName)
         {
             // Documentation : https://developer.poppulo.com/api-calls/api-delete-tag.html
 
             string MyURL = BaseURL + AccountCode + @"/tag/" + tagName;
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.DELETE);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(MyURL, HttpMethod.Delete))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -434,22 +502,27 @@ namespace PoppuloAPI
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public string GetSubscriberByEmail(string email)
+        public async Task<string> GetSubscriberByEmailAsync(string email)
         {
             string MyReturn = string.Empty;
 
-            // Example:
-            // GET https://api.newsweaver.com/v2/{account code}/subscriber/{subscriber email}
+            // Documentation: https://developer.poppulo.com/api-calls/api-get-subscriber.html
 
             //string MyURL = BaseURL + AccountCode + $"/subscriber/{email}";
             string MyURL = BaseURL + AccountCode + string.Format(@"/subscriber/{0}", email);
 
-            MyReturn = MakeHttpWebRequest(MyURL, HttpVerb.GET);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(MyURL, HttpMethod.Get))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    MyReturn = await c.ReadAsStringAsync();
 
-            // title="Edit: Subscriber 
-            LastSubscriberIdentifier = (LastHttpStatusCode.Equals(HttpStatusCode.OK) && MyReturn.Contains("Edit: Subscriber")) ? MyReturn.GetSubstringByString("(", ")") : string.Empty;
+                    LastSubscriberIdentifier = ((r.IsSuccessStatusCode) && MyReturn.Contains("Edit: Subscriber")) ? MyReturn.GetSubstringByString("(", ")") : string.Empty;
+                }
+            }
 
             return MyReturn;
+
         }
 
         /// <summary>
@@ -457,140 +530,114 @@ namespace PoppuloAPI
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public string ListSubscriberPermissionsByEmail(string email)
+        public async Task<string> ListSubscriberPermissionsByEmailAsync(string email)
         {
-            string MyReturn = string.Empty;
+            // Documentation: https://developer.poppulo.com/api-calls/api-list-subscriber-permissions.html
 
-            // Example:
-            // GET https://api.newsweaver.com/v2/{account code}/subscriber/{subscriber email}/permissions
-            //string MyURL = BaseURL + AccountCode + $"/subscriber/{email}/permissions";
             string MyURL = BaseURL + AccountCode + string.Format(@"/subscriber/{0}/permissions", email);
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.GET);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(MyURL, HttpMethod.Get))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
-        /// Private method to make HttpWebRequests to the end point.
+        /// Send HTTPClient.SendAsync.
         /// </summary>
-        /// <param name="endPoint"></param>
-        /// <param name="requestMethod"></param>
-        /// <param name="postData"></param>
+        /// <param name="url">The URL.</param>
+        /// <param name="method">The method.</param>
+        /// <param name="attempts">The attempts.</param>
+        /// <param name="waitMillisecondsForNextAttempt">The wait milliseconds for next attempt.</param>
+        /// <param name="bodyData">The body data.</param>
+        /// <param name="bodyDataEncoding">The body data encoding.</param>
+        /// <param name="bodyDataMediaType">Type of the body data media.</param>
         /// <returns></returns>
-        private string MakeHttpWebRequest(string endPoint, HttpVerb requestMethod, string postData = null)
+        /// <exception cref="Exception">Parameter attempts is <= 0, please review It.</exception>
+        private async Task<HttpResponseMessage> HTTPClientSendAsync(string url, HttpMethod method, int attempts = PoppuloAttemptsForHTTPRequests, int waitMillisecondsForNextAttempt = PoppuloWaitMillisecondsForNextAttempt, string bodyData = null, Encoding bodyDataEncoding = null, string bodyDataMediaType = null)
         {
-            // https://binarythistleblog.wordpress.com/2017/10/12/posting-to-a-rest-api-with-c/
+            HttpResponseMessage Myreturn;
 
-            string MyReturn = string.Empty;
+            HttpContent content = bodyData == null ? null : new StringContent(bodyData, bodyDataEncoding, bodyDataMediaType);
 
-            LastHttpWebRequestStream = postData;
+            if (attempts <= 0)
+                throw new Exception(@"Parameter attempts is <= 0, please review It.");
 
-            LastHttpVerb = requestMethod;
-
-            HttpWebRequest MyHttpWebRequest = HttpWebRequest.Create(endPoint) as HttpWebRequest;
-
-            MyHttpWebRequest.Method = requestMethod.ToString();
-
-            if (CompressContent)
-                MyHttpWebRequest.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-
-            // HTTP Basic Authentication.
-            MyHttpWebRequest.Headers.Add("Authorization", "Basic " + _Credentials);
-
-            MyHttpWebRequest.UserAgent = USERAGENT;
-
-            //NTLM authentication scheme.  
-            //MyHttpWebRequest.Credentials = new NetworkCredential(UserName, Password);
-
-
-            //MyHttpWebRequest.Accept = "application/xml";
-            //MyHttpWebRequest.Accept = "application/*";
-            //MyHttpWebRequest.Accept = "*/*";
-            MyHttpWebRequest.Accept = "*.*";
-
-            //MyHttpWebRequest.ContentType = "application/xml;charset=UTF-8";
-            MyHttpWebRequest.ContentType = "application/xml";
-
-            MyHttpWebRequest.KeepAlive = KeepRequestAlive;
-
-            // Check if the HttpVerb can trasport data in the boddy.
-            if (MyHttpWebRequest.Method == HttpVerb.POST.ToString() || MyHttpWebRequest.Method == HttpVerb.PUT.ToString())
+            Boolean Retrying = false;
+            do
             {
-                // Write the Body data data if any .
-                if (!string.IsNullOrEmpty(postData))
+                // Need to recreate the HttpRequestMessage for each attempt to avoid this error:
+                // The request message was already sent. Cannot send the same request message multiple times.
+                var request = new HttpRequestMessage(method, url)
                 {
-                    using (StreamWriter MyStreamWriter = new StreamWriter(MyHttpWebRequest.GetRequestStream()))
-                    {
-                        MyStreamWriter.Write(postData);
-                        MyStreamWriter.Close();
-                    }
+                    Content = content
+                };
+
+                if (Retrying)
+                    Thread.Sleep(waitMillisecondsForNextAttempt);
+
+                Myreturn = await _httpClient.SendAsync(request);
+
+                attempts--;
+
+                Retrying = true;
+
+            } while (attempts > 0 && Myreturn.StatusCode == HttpStatusCode.ServiceUnavailable);
+
+            return Myreturn;
+        }
+
+        /// <summary>
+        /// Create Subscriber Tag
+        /// </summary>
+        /// <param name="subscriberEmailAddress"></param>
+        /// <param name="tagName"></param>
+        /// <returns></returns>
+        public async Task<string> CreateSubscriberTagAsync(string subscriberEmailAddress, string tagName)
+        {
+            // Documentation: https://developer.poppulo.com/api-calls/api-create-subscriber-tag.html
+
+            string MyURL = BaseURL + AccountCode + @"/subscriber/" + subscriberEmailAddress + @"/tags";
+
+            StringBuilder MyTag = new StringBuilder(PoppuloAPIClient.XML_Subscriber_Tag_Template);
+
+            MyTag.Replace("{AccountCode}", AccountCode);
+            MyTag.Replace("{tagName}", Uri.EscapeDataString(tagName));
+
+            if (!PoppuloAPIClient.IsXML(MyTag.ToString()))
+                throw new Exception("XML for CreateSubscriberTagAsync is not a XML document Please review.");
+
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Post, bodyData: MyTag.ToString(), bodyDataEncoding: PoppuloBodyDataEncoding, bodyDataMediaType: PoppuloBodyDataMediaType))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
                 }
             }
+        }
 
-            // Get the response.
-            try
+        /// <summary>
+        /// Removes the subscriber tag.
+        /// </summary>
+        /// <param name="subscriberEmailAddress">The subscriber email address.</param>
+        /// <param name="tagName">Name of the tag.</param>
+        /// <returns></returns>
+        public async Task<string> RemoveSubscriberTagAsync(string subscriberEmailAddress, string tagName)
+        {
+            // Documentation: https://developer.poppulo.com/api-calls/api-remove-subscriber-tag.html
+
+            string MyURL = BaseURL + AccountCode + @"/subscriber/" + subscriberEmailAddress + @"/tag/" + tagName;
+
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Delete))
             {
-                using (HttpWebResponse exResponse = MyHttpWebRequest.GetResponse() as HttpWebResponse)
+                using (HttpContent c = r.Content)
                 {
-                    LastHttpStatusCode = exResponse.StatusCode;
-                    LastHttpStatusDescription = exResponse.StatusDescription;
-
-                    Stream MyStream = exResponse.GetResponseStream();
-
-                    if (exResponse.ContentEncoding.ToLower().Contains("gzip"))
-                        MyStream = new GZipStream(MyStream, CompressionMode.Decompress);
-
-                    else if (exResponse.ContentEncoding.ToLower().Contains("deflate"))
-                        MyStream = new DeflateStream(MyStream, CompressionMode.Decompress);
-
-                    StreamReader MyStreamReader = new StreamReader(MyStream, Encoding.Default);
-
-                    MyReturn = MyStreamReader.ReadToEnd();
-
-                    exResponse.Close();
-                    MyStream.Close();
+                    return await c.ReadAsStringAsync();
                 }
             }
-
-            catch (WebException ex)
-            {
-                using (HttpWebResponse exResponse = ex.Response as HttpWebResponse)
-                {
-                    LastHttpStatusCode = exResponse.StatusCode;
-                    LastHttpStatusDescription = exResponse.StatusDescription;
-
-                    Stream MyStream = exResponse.GetResponseStream();
-
-                    if (exResponse.ContentEncoding.ToLower().Contains("gzip"))
-                        MyStream = new GZipStream(MyStream, CompressionMode.Decompress);
-
-                    else if (exResponse.ContentEncoding.ToLower().Contains("deflate"))
-                        MyStream = new DeflateStream(MyStream, CompressionMode.Decompress);
-
-                    StreamReader MyStreamReader = new StreamReader(MyStream, Encoding.Default);
-
-                    MyReturn = MyStreamReader.ReadToEnd();
-
-                    exResponse.Close();
-                    MyStream.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                // this is a JSON response.
-                //MyReturn = "{\"errorMessages\":[\"" + ex.Message.ToString() + "\"],\"errors\":{}}";
-
-                // this is an XML response,
-                //MyReturn = $"<root><errorMessage>{ex.Message.ToString()}</errorMessages></root>";
-                MyReturn = string.Format(@"<root><errorMessage>{0}</errorMessages></root>", ex.Message.ToString());
-
-                // this is in plain text response.
-                //MyReturn = ex.Message.ToString();
-
-            }
-
-            LastHttpWebResponseStream = MyReturn;
-
-            return MyReturn;
         }
 
         /// <summary>
@@ -644,41 +691,45 @@ namespace PoppuloAPI
         }
 
         /// <summary>
-        /// Get the data source to import rows as Poppulo subscribers.
+        /// Gets the data source asynchronous.
         /// </summary>
-        public void GetDataSource()
+        /// <returns></returns>
+        public Task GetDataSourceAsync()
         {
-            _DataSource = new DataTable("DataSource_For_Poppulo_Subscribers");
-
-            using (var con = new SqlConnection(ConnectionStringForDataSource))
-            using (var cmd = new SqlCommand(StoredProcedureNameForDataSource, con))
-            using (var da = new SqlDataAdapter(cmd))
+            return Task.Factory.StartNew(() =>
             {
-                cmd.CommandType = CommandType.StoredProcedure;
+                _DataSource = new DataTable("DataSource_For_Poppulo_Subscribers");
 
-                //cmd.Parameters.Add("@EmployeeAddressEmail", SqlDbType.NVarChar, 75).Value = "aaron_johnson@ultimatesoftware.com";
+                using (var con = new SqlConnection(ConnectionStringForDataSource))
+                using (var cmd = new SqlCommand(StoredProcedureNameForDataSource, con))
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                da.Fill(_DataSource);
-            }
+                    //cmd.Parameters.Add("@EmployeeAddressEmail", SqlDbType.NVarChar, 75).Value = "aaron_johnson@ultimatesoftware.com";
+
+                    da.Fill(_DataSource);
+                }
+            });
         }
 
         /// <summary>
         /// Synchronize Data Source to Poppulo.
         /// </summary>
         /// <remarks>Tags must be created before using the SynchronizeDataSourceAsTags method if the tag is not created then it will be ignored in the subscriber.</remarks>  
-        public void SynchronizeDataSourceAsSubscribers()
+        public async Task<string> SynchronizeDataSourceAsSubscribersAsync()
         {
             // Load the data source.
             if (null == _DataSource)
             {
-                GetDataSource();
+                await GetDataSourceAsync();
             }
 
             // Create the subscriber_import_job using the _DataSource object.
             SetSubscriberImportJobEntity();
 
             // POST the Subscriber Import Job Entity to the Poppulo WEB API.
-            CreateSubscriberImportJob(_SubscriberImportJob.InnerXml);
+            return await CreateSubscriberImportJobAsync(_SubscriberImportJob.InnerXml);
         }
 
         /// <summary>
@@ -686,41 +737,61 @@ namespace PoppuloAPI
         /// </summary>
         /// <param name="subscriberImportJob"></param>
         /// <returns>A XML string of a Poppulo Status Entity</returns>
-        public void CreateSubscriberImportJob(string subscriberImportJob)
+        public async Task<string> CreateSubscriberImportJobAsync(string subscriberImportJob)
         {
             string MyReturn = string.Empty;
 
-            // Example:
-            // POST https://api.newsweaver.com/v2/{account code}/subscriber_imports
+            // Documentation: https://developer.poppulo.com/api-calls/api-create-subscriber-import-job.html
 
-            //string MyURL = BaseURL + $"{AccountCode}/subscriber_imports";
             string MyURL = BaseURL + string.Format(@"{0}/subscriber_imports", AccountCode);
 
-            MakeHttpWebRequest(MyURL, HttpVerb.POST, subscriberImportJob);
+            // load the subscriberImportJob to a xml
+            if (!PoppuloAPIClient.IsXML(subscriberImportJob))
+                throw new Exception("XML for CreateSubscriberImportJobAsync is not a XML document Please review.");
+
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Post, bodyData: subscriberImportJob, bodyDataEncoding: PoppuloBodyDataEncoding, bodyDataMediaType: PoppuloBodyDataMediaType))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    MyReturn = await c.ReadAsStringAsync();
+                }
+            }
 
             // Update the SubscriberImportLink
             SubscriberImportLink = string.Empty;
 
             // load the returned xml
             XmlDocument XmlSubscriberImport = new XmlDocument();
-
-            XmlSubscriberImport.LoadXml(LastHttpWebResponseStream);
+            XmlSubscriberImport.LoadXml(MyReturn);
 
             // Get the SubscriberImportLink
             SubscriberImportLink = XmlSubscriberImport.SelectSingleNode("/status/resources_created/link/@href").Value;
+
+            return MyReturn;
         }
 
         /// <summary>
         /// Get Subscriber Import
         /// </summary>
         /// <returns></returns>
-        public string GetSubscriberImport(string subscriberImportLink)
+        public async Task<string> GetSubscriberImportAsync(string subscriberImportLink)
         {
-            // https://developer.poppulo.com/api-calls/api-get-subscriber-import.html
+            // Documentation: https://developer.poppulo.com/api-calls/api-get-subscriber-import.html
 
-            // https://api.newsweaver.com/v2/{account code}/subscriber_import/{subscriber import id}
-
-            return string.IsNullOrEmpty(subscriberImportLink) ? string.Empty : MakeHttpWebRequest(subscriberImportLink, HttpVerb.GET);
+            if (string.IsNullOrEmpty(subscriberImportLink))
+            {
+                return string.Empty;
+            }
+            else
+            {
+                using (HttpResponseMessage r = await HTTPClientSendAsync(url: subscriberImportLink, method: HttpMethod.Get))
+                {
+                    using (HttpContent c = r.Content)
+                    {
+                        return await c.ReadAsStringAsync();
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -748,18 +819,50 @@ namespace PoppuloAPI
             // Load the sbXML as XmlDocument to ensure that it is a valid XML document.
             _SubscriberImportJob.LoadXml(sbXML.ToString());
         }
+
         /// <summary>
         /// Synchronize Data Source As Tags.
         /// </summary>
         /// <returns>A list of the tags processed.</returns>
-        public List<string> SynchronizeDataSourceAsTags()
+        public async Task<List<string>> SynchronizeDataSourceAsTagsAsync(int maxDegreeOfParallelism = 5)
         {
-            int Retries;
+            List<Task> tasks = new List<Task>();
 
+            using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxDegreeOfParallelism))
+            {
+                List<string> AllTags = await GetTagsNamesFromDataSourceAsync();
+
+                // Try to delete & create the new tags.
+                foreach (var tag in AllTags)
+                {
+                    concurrencySemaphore.Wait();
+
+                    //await CreateTagAsync(t, @"(API Created) " + t);
+                    Task<string> t = CreateTagAsync(tag, @"(API Created) " + tag);
+
+                    tasks.Add(t);
+
+                    concurrencySemaphore.Release();
+                }
+
+                // Wait until the end of all tasks
+                Task.WaitAll(tasks.ToArray());
+
+                return AllTags;
+            }
+        }
+
+
+        /// <summary>
+        /// Get Tags names from data source.
+        /// </summary>
+        /// <returns>A list of tags names from data source.</returns>
+        public async Task<List<string>> GetTagsNamesFromDataSourceAsync()
+        {
             // Load the data source.
             if (null == _DataSource)
             {
-                GetDataSource();
+                await GetDataSourceAsync();
             }
 
             // Verify the data source have the columns needed.
@@ -778,69 +881,79 @@ namespace PoppuloAPI
             // Dedup and sort the Tags.
             AllTags = AllTags.Distinct().OrderBy(q => q).ToList<string>();
 
-            // Try to create the new tags.
-            foreach (var t in AllTags)
-            {
-                Retries = 0;
-
-                do
-                {
-                    Retries++;
-
-                    if (Retries > 1)
-                        Thread.Sleep(MillisecondsWaitWhenServiceIsRespondingServiceUnavailable);
-
-                    CreateTag(t, t);
-
-                } while (Retries < RetriesWhenServiceIsRespondingServiceUnavailable && this.LastHttpStatusCode == HttpStatusCode.ServiceUnavailable);
-            }
+            // Return the tags.
             return AllTags;
         }
 
         /// <summary>
-        /// Create Subscriber Tags
+        /// Delete API Created Tags.
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="tags"></param>
-        /// <returns></returns>
-        //private List<string> CreateSubscriberTags(string email, List<string> tags)
-        //{
-        //    // TODO THIS IS NOT WORKING IT IS RETURNING 400 Bad Request Error.
+        /// <param name="pageSize"></param>
+        /// <returns> A List<XmlNode> of the deleted tags.</returns>
+        public async Task<List<Task>> DeleteAPICreatedTagsAsync(int? pageSize = null, int maxDegreeOfParallelism = 5)
+        {
+            using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxDegreeOfParallelism))
+            {
+                //List<Task> MyReturn = new List<Task>();
+                // Get all the tags.
+                List<XmlNode> ListTags = await ListTagsAsync(pageSize);
 
-        //    List<string> MyReturn = new List<string>();
+                string TagUri;
 
-        //    // Documentation:
-        //    // https://developer.poppulo.com/api-calls/api-create-subscriber-tag.html
+                List<Task> tasks = new List<Task>();
 
-        //    //string MyURL = BaseURL + AccountCode + $"/subscribers/";
-        //    string MyURL = BaseURL + AccountCode + @"/subscriber/" + email + @"/tags";
+                foreach (XmlNode n in ListTags)
+                {
+                    if (n.Attributes != null)
+                    {
+                        var nameAttribute = n.Attributes["uri"];
+                        if (nameAttribute != null)
+                        {
+                            TagUri = nameAttribute.Value;
 
-        //    foreach (var Tag in tags)
-        //    {
-        //        StringBuilder MyTag = new StringBuilder(PoppuloAPIClient.XML_Tag_Template);
+                            string strTag;
 
-        //        MyTag.Replace("{Name}", Tag);
-        //        MyTag.Replace("{Description}", Tag);
+                            using (HttpResponseMessage r = await HTTPClientSendAsync(url: TagUri, method: HttpMethod.Get))
+                            {
+                                using (HttpContent c = r.Content)
+                                {
+                                    strTag = await c.ReadAsStringAsync();
+                                }
+                            }
 
-        //        XmlDocument xmlTag = new XmlDocument();
-        //        xmlTag.LoadXml(MyTag.ToString());
+                            // Load the Tag
+                            XmlDocument XMLTag = new XmlDocument();
 
-        //        int Retries = 0;
+                            XMLTag.LoadXml(strTag);
 
-        //        do
-        //        {
-        //            Retries++;
+                            // Get the description
 
-        //            if (Retries > 1)
-        //                Thread.Sleep(MillisecondsWaitWhenServiceIsRespondingServiceUnavailable);
+                            var descriptionTag = XMLTag.SelectSingleNode("/tag/description");
+                            if (descriptionTag != null)
+                            {
+                                string strdescriptionTag = descriptionTag.InnerText;
 
-        //            MyReturn.Add(MakeHttpWebRequest(MyURL, HttpVerb.POST, xmlTag.InnerXml));
+                                if (strdescriptionTag.Contains(@"(API Created)"))
+                                {
+                                    concurrencySemaphore.Wait();
 
-        //        } while (Retries < RetriesWhenServiceIsRespondingServiceUnavailable && this.LastHttpStatusCode == HttpStatusCode.ServiceUnavailable);
-        //    }
+                                    Task<HttpResponseMessage> t = HTTPClientSendAsync(url: TagUri, method: HttpMethod.Delete);
 
-        //    return MyReturn;
-        //}
+                                    tasks.Add(t);
+
+                                    concurrencySemaphore.Release();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Wait until the end of all tasks
+                Task.WaitAll(tasks.ToArray());
+
+                return tasks;
+            }
+        }
 
         /// <summary>
         /// Get a subscriber by external_id.
@@ -848,17 +961,19 @@ namespace PoppuloAPI
         /// <param name="external_id"></param>
         /// <param name="subscriberStatus"></param>
         /// <returns></returns>
-        public string GetSubscriberByExternal_id(string external_id, SubscriberStatus subscriberStatus = SubscriberStatus.active)
+        public async Task<string> GetSubscriberByExternal_idAsync(string external_id, SubscriberStatus subscriberStatus = SubscriberStatus.active)
         {
-            string MyReturn = string.Empty;
+            //Documentation: https://developer.poppulo.com/api-calls/api-list-subscribers.html
 
-            // Example:
-            // GET https://api.us.newsweaver.com/v2/{account code}/subscribers?ext_id=11019&status=all
-
-            //string MyURL = BaseURL + AccountCode + $"/subscribers/?ext_id={external_id}&status={subscriberStatus}";
             string MyURL = BaseURL + AccountCode + string.Format(@"/subscribers/?ext_id={0}&status={1}", external_id, subscriberStatus);
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.GET);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Get))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -866,17 +981,19 @@ namespace PoppuloAPI
         /// </summary>
         /// <param name="xmlSubscriber">xml object that represent a subscriber</param>
         /// <returns></returns>
-        public string CreateSubscriber(XmlDocument xmlSubscriber)
+        public async Task<string> CreateSubscriberAsync(XmlDocument xmlSubscriber)
         {
-            string MyReturn = string.Empty;
+            // Documentation: https://developer.poppulo.com/api-calls/api-create-subscriber.html
 
-            // Example:
-            // GET https://api.newsweaver.com/v2/{account code}/subscriber/{subscriber email}
-
-            //string MyURL = BaseURL + AccountCode + $"/subscribers/";
             string MyURL = BaseURL + AccountCode + @"/subscribers/";
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.POST, xmlSubscriber.InnerXml);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Post, bodyData: xmlSubscriber.InnerXml, bodyDataEncoding: PoppuloBodyDataEncoding, bodyDataMediaType: PoppuloBodyDataMediaType))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -885,15 +1002,19 @@ namespace PoppuloAPI
         /// <param name="subscriberIdentifier">Subscriber Identifier</param>
         /// <param name="xmlSubscriber">xml Subscriber</param>
         /// <returns></returns>
-        public string UpdateSubscriber(string subscriberIdentifier, XmlDocument xmlSubscriber)
+        public async Task<string> UpdateSubscriberAsync(string subscriberIdentifier, XmlDocument xmlSubscriber)
         {
-            string MyReturn = string.Empty;
-
             // Documentation: https://developer.poppulo.com/api-calls/api-update-subscriber.html
 
             string MyURL = BaseURL + AccountCode + @"/subscriber/" + subscriberIdentifier;
 
-            return MakeHttpWebRequest(MyURL, HttpVerb.PUT, xmlSubscriber.InnerXml);
+            using (HttpResponseMessage r = await HTTPClientSendAsync(url: MyURL, method: HttpMethod.Put, bodyData: xmlSubscriber.InnerXml, bodyDataEncoding: PoppuloBodyDataEncoding, bodyDataMediaType: PoppuloBodyDataMediaType))
+            {
+                using (HttpContent c = r.Content)
+                {
+                    return await c.ReadAsStringAsync();
+                }
+            }
         }
 
         /// <summary>
@@ -918,192 +1039,173 @@ namespace PoppuloAPI
         /// <param name="userId"></param>
         /// <param name="secretPath"></param>
         /// <returns></returns>
-        public static string GetUltiSafeSecret(string url, string appId, string userId, string secretPath)
+        public static async Task<string> GetUltiSafeSecretAsync(string url, string appId, string userId, string secretPath)
         {
-            // https://binarythistleblog.wordpress.com/2017/10/12/posting-to-a-rest-api-with-c/
-
             string MyReturn = string.Empty;
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            // this is mandatory in the SSIS package)
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                   | SecurityProtocolType.Tls11
+                   | SecurityProtocolType.Tls12
+                   | SecurityProtocolType.Ssl3;
 
             Uri myUri = new Uri(new Uri(url), "auth/app-id/login/" + appId);
 
-            HttpWebRequest MyHttpWebRequest = HttpWebRequest.Create(myUri) as HttpWebRequest;
-
-            MyHttpWebRequest.Method = HttpVerb.POST.ToString();
-
-            //if (CompressContent)
-            MyHttpWebRequest.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-
-            //MyHttpWebRequest.Accept = "*.*";
-
-            //MyHttpWebRequest.ContentType = "application/xml;charset=UTF-8";
-            //MyHttpWebRequest.ContentType = "application/xml";
-
-            //MyHttpWebRequest.KeepAlive = KeepRequestAlive;
-
-            if (MyHttpWebRequest.Method == HttpVerb.POST.ToString())
+            // Set the client.
+            using (HttpClient httpClient = new HttpClient())
             {
-                // Write the POST data.
-                //if (!string.IsNullOrEmpty(postData))
-                {
-                    using (StreamWriter MyStreamWriter = new StreamWriter(MyHttpWebRequest.GetRequestStream()))
-                    {
-                        string postData = "{\"user_id\":\"" + userId + "\"}";
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                        MyStreamWriter.Write(postData);
-                        MyStreamWriter.Close();
+                // Set the content.
+                var content = new StringContent("{\"user_id\":\"" + userId + "\"}", Encoding.UTF8, "application/json");
+
+                // Make the request to get the client_token.
+                using (HttpResponseMessage r = await httpClient.PostAsync(myUri.ToString(), content))
+                {
+                    using (HttpContent c = r.Content)
+                    {
+                        MyReturn = await c.ReadAsStringAsync();
+                    }
+                }
+
+                // Extract the token.
+                // BuildMyString.com generated code. Please enjoy your string responsibly.
+                string sb = "(?:\"client_token\":\")(.*?)(?:\")";
+
+                var m = Regex.Match(MyReturn, sb);
+
+                string client_token = string.Empty;
+
+                //https://docs.microsoft.com/en-us/dotnet/standard/base-types/grouping-constructs-in-regular-expressions
+                if (m.Success)
+                {
+                    client_token = m.Groups[1].ToString();
+                }
+                else
+                {
+                    throw new Exception("Can not get the client_token from the vault...");
+                }
+
+                // now try to get the secret.
+                //-------------------------------------
+                httpClient.DefaultRequestHeaders.Add("X-Vault-Token", client_token);
+
+                myUri = new Uri(new Uri(url), secretPath.TrimStart("/".ToCharArray()));
+
+                using (HttpResponseMessage r = await httpClient.GetAsync(myUri.ToString()))
+                {
+                    using (HttpContent c = r.Content)
+                    {
+                        MyReturn = await c.ReadAsStringAsync();
                     }
                 }
             }
 
-            // Get the response.
-            try
-            {
-                using (HttpWebResponse exResponse = MyHttpWebRequest.GetResponse() as HttpWebResponse)
-                {
-                    Stream MyStream = exResponse.GetResponseStream();
-
-                    if (exResponse.ContentEncoding.ToLower().Contains("gzip"))
-                        MyStream = new GZipStream(MyStream, CompressionMode.Decompress);
-
-                    else if (exResponse.ContentEncoding.ToLower().Contains("deflate"))
-                        MyStream = new DeflateStream(MyStream, CompressionMode.Decompress);
-
-                    StreamReader MyStreamReader = new StreamReader(MyStream, Encoding.Default);
-
-                    MyReturn = MyStreamReader.ReadToEnd();
-
-                    exResponse.Close();
-                    MyStream.Close();
-                }
-            }
-
-            catch (WebException ex)
-            {
-                using (HttpWebResponse exResponse = ex.Response as HttpWebResponse)
-                {
-                    Stream MyStream = exResponse.GetResponseStream();
-
-                    if (exResponse.ContentEncoding.ToLower().Contains("gzip"))
-                        MyStream = new GZipStream(MyStream, CompressionMode.Decompress);
-
-                    else if (exResponse.ContentEncoding.ToLower().Contains("deflate"))
-                        MyStream = new DeflateStream(MyStream, CompressionMode.Decompress);
-
-                    StreamReader MyStreamReader = new StreamReader(MyStream, Encoding.Default);
-
-                    MyReturn = MyStreamReader.ReadToEnd();
-
-                    exResponse.Close();
-                    MyStream.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                // this is a JSON response.
-                MyReturn = "{\"errorMessages\":[\"" + ex.Message.ToString() + "\"],\"errors\":{}}";
-
-                // this is an XML response,
-                //MyReturn = $"<root><errorMessage>{ex.Message.ToString()}</errorMessages></root>";
-                //MyReturn = string.Format(@"<root><errorMessage>{0}</errorMessages></root>", ex.Message.ToString());
-
-                // this is in plain text response.
-                //MyReturn = ex.Message.ToString();
-
-            }
-
-            // BuildMyString.com generated code. Please enjoy your string responsibly.
-            string sb = "(?:\"client_token\":\")(.*?)(?:\")";
-
-            var m = Regex.Match(MyReturn, sb);
-
-            string client_token = string.Empty;
-
-            //https://docs.microsoft.com/en-us/dotnet/standard/base-types/grouping-constructs-in-regular-expressions
-            if (m.Success)
-            {
-                client_token = m.Groups[1].ToString();
-            }
-            else
-            {
-                throw new Exception("Can not get the client_token...");
-            }
-
-            // now try to get the secret.
-            //-------------------------------------
-            // https://binarythistleblog.wordpress.com/2017/10/12/posting-to-a-rest-api-with-c/
-
-
-            myUri = new Uri(new Uri(url), secretPath.TrimStart("/".ToCharArray()));
-
-            MyHttpWebRequest = HttpWebRequest.Create(myUri) as HttpWebRequest;
-
-            MyHttpWebRequest.Method = HttpVerb.GET.ToString();
-
-            MyHttpWebRequest.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-
-            MyHttpWebRequest.Headers.Add("X-Vault-Token", client_token);
-
-            //MyHttpWebRequest.Accept = "*.*";
-
-            // Get the response.
-            try
-            {
-                using (HttpWebResponse exResponse = MyHttpWebRequest.GetResponse() as HttpWebResponse)
-                {
-                    Stream MyStream = exResponse.GetResponseStream();
-
-                    if (exResponse.ContentEncoding.ToLower().Contains("gzip"))
-                        MyStream = new GZipStream(MyStream, CompressionMode.Decompress);
-
-                    else if (exResponse.ContentEncoding.ToLower().Contains("deflate"))
-                        MyStream = new DeflateStream(MyStream, CompressionMode.Decompress);
-
-                    StreamReader MyStreamReader = new StreamReader(MyStream, Encoding.Default);
-
-                    MyReturn = MyStreamReader.ReadToEnd();
-
-                    exResponse.Close();
-                    MyStream.Close();
-                }
-            }
-
-            catch (WebException ex)
-            {
-                using (HttpWebResponse exResponse = ex.Response as HttpWebResponse)
-                {
-                    Stream MyStream = exResponse.GetResponseStream();
-
-                    if (exResponse.ContentEncoding.ToLower().Contains("gzip"))
-                        MyStream = new GZipStream(MyStream, CompressionMode.Decompress);
-
-                    else if (exResponse.ContentEncoding.ToLower().Contains("deflate"))
-                        MyStream = new DeflateStream(MyStream, CompressionMode.Decompress);
-
-                    StreamReader MyStreamReader = new StreamReader(MyStream, Encoding.Default);
-
-                    MyReturn = MyStreamReader.ReadToEnd();
-
-                    exResponse.Close();
-                    MyStream.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                // this is a JSON response.
-                MyReturn = "{\"errorMessages\":[\"" + ex.Message.ToString() + "\"],\"errors\":{}}";
-
-                // this is an XML response,
-                //MyReturn = $"<root><errorMessage>{ex.Message.ToString()}</errorMessages></root>";
-                //MyReturn = string.Format(@"<root><errorMessage>{0}</errorMessages></root>", ex.Message.ToString());
-
-                // this is in plain text response.
-                //MyReturn = ex.Message.ToString();
-
-            }
-
             return MyReturn;
+        }
+
+        /// <summary>
+        /// List Subscribers
+        /// </summary>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns></returns>
+        public async Task<List<XmlNode>> ListSubscribersAsync(int? pageSize = null)
+        {
+            // Documentation: https://developer.poppulo.com/api-calls/api-list-subscribers.html
+
+            string MyURL = BaseURL + AccountCode + @"/subscribers";
+
+            return await GetListEntitiesAsync(MyURL, PoppuloListType.Subscribers, pageSize);
+        }
+
+        /// <summary>
+        /// Get a list of Populo entities
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="poppuloListType"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        private async Task<List<XmlNode>> GetListEntitiesAsync(string url, PoppuloListType poppuloListType, int? pageSize = null)
+        {
+            // Documentation: https://developer.poppulo.com/api-basics/api-list.html
+
+            List<XmlNode> ListEntities = new List<XmlNode>();
+
+            url += (pageSize == null || pageSize < 1) ? "" : string.Format(@"?page_size={0}", pageSize);
+
+            string strEntityTypeName, strEntitiesTypeName;
+
+            switch (poppuloListType)
+            {
+                case PoppuloListType.Accounts:
+                    strEntityTypeName = "account";
+                    strEntitiesTypeName = "accounts";
+                    break;
+                case PoppuloListType.Tags:
+                    strEntityTypeName = "tag";
+                    strEntitiesTypeName = "tags";
+                    break;
+                case PoppuloListType.Subscribers:
+                    strEntityTypeName = "subscriber";
+                    strEntitiesTypeName = "subscribers";
+                    break;
+                default:
+                    throw new Exception("Unsupported PoppuloListType, please review.");
+                    break;
+            }
+
+            XmlNode EntitiesNode;
+
+            int Page = 0;
+
+            int TotalResults = 0;
+
+            do
+            {
+                Page++;
+
+                string PageURL = url + ((url.Contains(@"?")) ? @"&" : @"?") + string.Format(@"page={0}", Page);
+
+                string strEntities;
+
+                using (HttpResponseMessage r = await HTTPClientSendAsync(url: PageURL, method: HttpMethod.Get))
+                {
+                    using (HttpContent c = r.Content)
+                    {
+                        strEntities = await c.ReadAsStringAsync();
+                    }
+                }
+
+                XmlDocument XMLPageEntities = new XmlDocument();
+
+                XMLPageEntities.LoadXml(strEntities);
+
+                // extract the nodes
+                XmlNodeList EntitiesType = XMLPageEntities.GetElementsByTagName(strEntitiesTypeName);
+
+                if (EntitiesType != null && EntitiesType.Count > 0)
+                    EntitiesNode = XMLPageEntities.GetElementsByTagName(strEntitiesTypeName)[0];
+                else
+                    throw new Exception("No EntitiesType type returned, Please review.");
+
+                // Get the TotalResults
+                var TotalResultsNodes = EntitiesNode.SelectNodes("totalResults");
+
+                if (TotalResultsNodes != null)
+
+                    int.TryParse(TotalResultsNodes[0].InnerText, out TotalResults);
+
+                XmlNodeList EntityNodes = XMLPageEntities.GetElementsByTagName(strEntityTypeName);
+
+                foreach (XmlNode n in EntityNodes)
+                {
+                    ListEntities.Add(n);
+                }
+
+            } while (ListEntities.Count < TotalResults);
+
+            return ListEntities;
         }
 
         /// <summary>
