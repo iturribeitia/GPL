@@ -394,6 +394,43 @@ namespace GPL.UnitTests
 
         }
 
+        [TestMethod]
+        public void Extensions_T006_StartAndWaitAllThrottled()
+        {
+            // StartAndWaitAllThrottledAsync
+
+            // Create a list of tasks to control
+            List<Task> tasks = new List<Task>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var t = new Task(() =>
+                {
+                    CountAndWait(10, 5000);
+                });
+
+
+                tasks.Add(t);
+
+            }
+
+
+            Task T =  Utility.StartAndWaitAllThrottledAsync(tasks, 10);
+
+            Task.WaitAll(tasks.ToArray());
+
+            string waithere = "";
+        }
+
+        private void CountAndWait(int count = 10, int milisecondsToWait = 5000)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Trace.WriteLine($"count = {i} milisecondsToWait = {milisecondsToWait}");
+                Thread.Sleep(milisecondsToWait);
+            }
+        }
+
 
         /// <summary>
         /// This is the destructor of this class.
