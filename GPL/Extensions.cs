@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -95,6 +96,38 @@ namespace GPL
         #endregion DirectoryInfo extensions
 
         #region string extensions
+
+        /// <summary>
+        /// Convert a Image to string.
+        /// </summary>
+        /// <param name="image">This Image</param>
+        /// <returns>A string of the Image</returns>
+        public static string ImageToString(this Image image)
+        {
+            if (image == null)
+                return String.Empty;
+
+            var stream = new MemoryStream();
+            image.Save(stream, image.RawFormat);
+            var bytes = stream.ToArray();
+
+            return Convert.ToBase64String(bytes);
+        }
+
+        /// <summary>
+        /// Convert a string to Image.
+        /// </summary>
+        /// <param name="base64String">This string</param>
+        /// <returns>A Image from the string</returns>
+        public static Image StringToImage(this string base64String)
+        {
+            if (String.IsNullOrWhiteSpace(base64String))
+                return null;
+
+            var bytes = Convert.FromBase64String(base64String);
+            var stream = new MemoryStream(bytes);
+            return Image.FromStream(stream);
+        }
 
         /// <summary>
         /// Get Substring By String

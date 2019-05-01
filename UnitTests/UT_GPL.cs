@@ -49,6 +49,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Drawing;
 
 namespace GPL.UnitTests
 {
@@ -434,7 +435,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void Extensions_T006_ParseFromStream()
+        public void Extensions_T006_ParseFromJson()
         {
             using (HttpClient client = new HttpClient())
             {
@@ -455,11 +456,35 @@ namespace GPL.UnitTests
             }
         }
 
+        [TestMethod]
+        public void Extensions_T006_ImageToString()
+        {
+            var a = Utility.GetCurrentExecutablePath();
+            var b = new FileInfo(a).Name;
+            a = a.Replace(@"\bin\Debug\" + b, @"\App_Data\Files\Images\Habibi.jpg");
 
-            /// <summary>
-            /// This is the destructor of this class.
-            /// </summary>
-            ~UT_GPL()
+            // Load the image from a file
+            Image i = Image.FromFile(a);
+
+            Assert.IsInstanceOfType(i, typeof(Image));
+
+            // Now convert the Image to string.
+            var strImage = i.ImageToString();
+
+            Assert.IsInstanceOfType(strImage, typeof(string));
+
+            // Now load the Image from the string
+            var ii = strImage.StringToImage();
+
+            Assert.IsInstanceOfType(ii, typeof(Image));
+
+        }
+
+
+        /// <summary>
+        /// This is the destructor of this class.
+        /// </summary>
+        ~UT_GPL()
         {
             // Detach the Northwind database.
 
