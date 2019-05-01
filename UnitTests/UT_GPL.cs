@@ -47,6 +47,8 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace GPL.UnitTests
 {
@@ -431,11 +433,31 @@ namespace GPL.UnitTests
             }
         }
 
+        [TestMethod]
+        public void Extensions_T006_ParseFromStream()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                const string url = "http://www.json-generator.com/api/json/get/bVHreokWmq?indent=2";
+                //using (HttpResponseMessage response =  client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).Result)
+                using (HttpResponseMessage response =  client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult())
+                //using (Stream streamToReadFrom = response.Content.ReadAsStreamAsync().Result)
+                using (Stream streamToReadFrom = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
+                {
+                    dynamic dynamicObj = streamToReadFrom.DeserializeJsonFromStream<dynamic>();
 
-        /// <summary>
-        /// This is the destructor of this class.
-        /// </summary>
-        ~UT_GPL()
+                    string validString = JsonConvert.SerializeObject(dynamicObj);
+
+                    Assert.IsTrue(validString.Length > 500);
+                }
+            }
+        }
+
+
+            /// <summary>
+            /// This is the destructor of this class.
+            /// </summary>
+            ~UT_GPL()
         {
             // Detach the Northwind database.
 

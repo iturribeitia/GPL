@@ -37,6 +37,7 @@
     This Class is the Extensions repository.
 */
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1044,6 +1045,66 @@ namespace GPL
         }
 
         #endregion IDataReader
+
+        #region stream
+
+        /// <summary>
+        /// COnvert this string to a Stream
+        /// </summary>
+        /// <param name="str">This strim</param>
+        /// <returns>A Stream from the string</returns>
+        public static Stream ToStream(this string str)
+        {
+            byte[] byteArray = Encoding.UTF8.GetBytes(str);
+            //byte[] byteArray = Encoding.ASCII.GetBytes(str);
+            return new MemoryStream(byteArray);
+        }
+        /// <summary>
+        /// Copy from one stream to another.
+        /// Example:
+        /// using(var stream = response.GetResponseStream())
+        /// using(var ms = new MemoryStream())
+        /// {
+        ///     stream.CopyTo(ms);
+        ///      // Do something with copied data
+        /// }
+        /// </summary>
+        /// <param name="fromStream">From stream.</param>
+        /// <param name="toStream">To stream.</param>
+        public static void CopyTo(this Stream fromStream, Stream toStream)
+        {
+            if (fromStream == null)
+                throw new ArgumentNullException("fromStream");
+            if (toStream == null)
+                throw new ArgumentNullException("toStream");
+            var bytes = new byte[8092];
+            int dataRead;
+            while ((dataRead = fromStream.Read(bytes, 0, bytes.Length)) > 0)
+                toStream.Write(bytes, 0, dataRead);
+        }
+
+        /// <summary>
+        /// Deserialize Json From Stream.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static T DeserializeJsonFromStream<T>(this Stream stream)
+        {
+            if (stream == null || stream.CanRead == false)
+                return default(T);
+
+            using (var sr = new StreamReader(stream))
+            using (var jtr = new JsonTextReader(sr))
+            {
+                var js = new JsonSerializer();
+                var searchResult = js.Deserialize<T>(jtr);
+                return searchResult;
+            }
+        }
+
+        #endregion stream
+
     }
 
     /// <summary>
