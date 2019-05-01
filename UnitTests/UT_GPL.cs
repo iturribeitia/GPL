@@ -449,6 +449,8 @@ namespace GPL.UnitTests
                     string validString = JsonConvert.SerializeObject(dynamicObj);
 
                     Assert.IsTrue(validString.Length > 500);
+
+                    Assert.IsTrue(validString.IsValidJson());
                 }
             }
         }

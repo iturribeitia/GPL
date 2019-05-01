@@ -38,6 +38,7 @@
 */
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,6 +49,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Xml;
 using System.Xml.Serialization;
@@ -109,7 +111,7 @@ namespace GPL
         /// <summary>
         /// Validate is a string is a XML.
         /// </summary>
-        /// <param name="xml"></param>
+        /// <param name="xml">This XML string</param>
         /// <returns></returns>
         public static bool IsXML(this string xml)
         {
@@ -123,6 +125,21 @@ namespace GPL
             {
                 return false;
             }
+        }
+        /// <summary>
+        /// Validate is this string is a json.
+        /// </summary>
+        /// <param name="json">This string as a json</param>
+        /// <returns>True is It can be deserialize to a dynamic type</returns>
+        public static bool IsValidJson(this string json)
+        {
+            try
+            {
+                var serializer = new JavaScriptSerializer();
+                dynamic result = serializer.DeserializeObject(json);
+                return true;
+            }
+            catch { return false; }
         }
 
         /// <summary>
