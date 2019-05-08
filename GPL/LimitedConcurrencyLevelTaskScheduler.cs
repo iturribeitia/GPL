@@ -51,6 +51,7 @@ namespace GPL
     /// http://msdn.microsoft.com/en-us/library/ee789351.aspx
     /// </summary>
 
+    [Obsolete("Do Not used any more, use the Parallel.ForEach", false)]
     public class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
     {
         /// <summary>Whether the current thread is processing work items.</summary>

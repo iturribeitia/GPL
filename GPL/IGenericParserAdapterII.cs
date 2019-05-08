@@ -43,6 +43,7 @@ using System.Threading.Tasks;
 
 namespace GPL
 {
+    [Obsolete("Not used any more, It was a prototipe", true)]
     interface IGenericParserAdapterII
     {
          string SQL_ConnectionString { get; set; }

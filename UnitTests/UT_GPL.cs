@@ -425,17 +425,24 @@ namespace GPL.UnitTests
             string waithere = "";
         }
 
-        private void CountAndWait(int count = 10, int milisecondsToWait = 5000)
+        [TestMethod]
+        public void Extensions_T007_Stream_ToDataTable()
         {
-            for (int i = 0; i < count; i++)
+            var a = Utility.GetCurrentExecutablePath();
+            var b = new FileInfo(a).Name;
+            a = a.Replace(@"\bin\Debug\" + b, @"\App_Data\Files\DelimitedFiles\Sample_CSV_File.csv");
+
+            // get a Stream from the file.
+            using (FileStream stream = File.Open(a, FileMode.Open))
             {
-                Trace.WriteLine($"count = {i} milisecondsToWait = {milisecondsToWait}");
-                Thread.Sleep(milisecondsToWait);
+                var r = stream.ToDataTable(true, true, ',', '"');
+
+                Assert.ReferenceEquals(r, new DataTable());
             }
         }
 
         [TestMethod]
-        public void Extensions_T006_ParseFromJson()
+        public void Extensions_T008_ParseFromJson()
         {
             using (HttpClient client = new HttpClient())
             {
@@ -457,7 +464,7 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
-        public void Extensions_T006_ImageToString()
+        public void Extensions_T009_ImageToString()
         {
             var a = Utility.GetCurrentExecutablePath();
             var b = new FileInfo(a).Name;
@@ -478,6 +485,15 @@ namespace GPL.UnitTests
 
             Assert.IsInstanceOfType(ii, typeof(Image));
 
+        }
+
+        private void CountAndWait(int count = 10, int milisecondsToWait = 5000)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Trace.WriteLine($"count = {i} milisecondsToWait = {milisecondsToWait}");
+                Thread.Sleep(milisecondsToWait);
+            }
         }
 
 

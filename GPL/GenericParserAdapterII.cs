@@ -44,6 +44,7 @@ using System.Threading.Tasks;
 
 namespace GPL
 {
+    [Obsolete("Not used any more, It was a prototipe", true)]
     public class GenericParserAdapterII : GenericParserAdapter, IGenericParserAdapterII
     {
         public string SQL_ConnectionString

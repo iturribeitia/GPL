@@ -37,6 +37,7 @@
     This Class is the Extensions repository.
 */
 
+using GenericParsing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -1150,6 +1151,34 @@ namespace GPL
                 var js = new JsonSerializer();
                 var searchResult = js.Deserialize<T>(jtr);
                 return searchResult;
+            }
+        }
+
+        /// <summary>
+        /// Get a DataTable from This stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="skipEmptyRows"></param>
+        /// <param name="hasHeaderRecord"></param>
+        /// <param name="delimiter"></param>
+        /// <param name="textQualifier"></param>
+        /// <param name="escapeCharacter"></param>
+        /// <returns></returns>
+        public static DataTable ToDataTable(this Stream stream, bool skipEmptyRows, bool hasHeaderRecord, char? delimiter = null, char? textQualifier = null, char? escapeCharacter = null)
+        {
+            using (GenericParserAdapter parser = new GenericParserAdapter())
+            {
+                stream.Position = 0;
+
+                parser.SetDataSource(new StreamReader(stream));
+
+                parser.ColumnDelimiter = delimiter;
+                parser.FirstRowHasHeader = hasHeaderRecord;
+                parser.TextQualifier = textQualifier;
+                parser.SkipEmptyRows = skipEmptyRows;
+                parser.EscapeCharacter = escapeCharacter;
+
+                return parser.GetDataTable();
             }
         }
 
