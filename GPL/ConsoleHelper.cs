@@ -47,6 +47,7 @@ namespace GPL
     /// <summary>
     /// Console Helper Class.
     /// </summary>
+    [Obsolete("Not used any more.", true)]
     public static class ConsoleHelper
     {
 
