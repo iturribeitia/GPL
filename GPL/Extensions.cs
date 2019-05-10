@@ -962,6 +962,152 @@ namespace GPL
             }
         }
 
+        /// <summary>
+        /// Returns a string with a SQL CREATE TABLE command for this DataTable.
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <param name="sqlTableName"></param>
+        /// <returns></returns>
+        public static string GetSQLScriptToCreateTable(this DataTable dataTable, string sqlTableName)
+        {
+            if (string.IsNullOrEmpty(sqlTableName))
+                throw new ArgumentException("tableName Parameter is null or empty.");
+
+            StringBuilder sql = new StringBuilder();
+            StringBuilder alterSql = new StringBuilder();
+
+            sql.AppendFormat("CREATE TABLE [{0}] (", sqlTableName);
+
+            for (int i = 0; i < dataTable.Columns.Count; i++)
+            {
+                bool isNumeric = false;
+                bool usesColumnDefault = true;
+
+                sql.AppendFormat("\n\t[{0}]", dataTable.Columns[i].ColumnName);
+
+                switch (dataTable.Columns[i].DataType.ToString().ToUpper())
+                {
+                    case "SYSTEM.INT16":
+                        sql.Append(" smallint");
+                        isNumeric = true;
+                        break;
+                    case "SYSTEM.INT32":
+                        sql.Append(" int");
+                        isNumeric = true;
+                        break;
+                    case "SYSTEM.INT64":
+                        sql.Append(" bigint");
+                        isNumeric = true;
+                        break;
+                    case "SYSTEM.DATETIME":
+                        sql.Append(" datetime");
+                        usesColumnDefault = false;
+                        break;
+                    case "SYSTEM.STRING":
+                        sql.AppendFormat(" nvarchar({0})", dataTable.Columns[i].MaxLength.Equals(-1) ? "MAX" : dataTable.Columns[i].MaxLength.ToString());
+                        break;
+                    case "SYSTEM.SINGLE":
+                        sql.Append(" single");
+                        isNumeric = true;
+                        break;
+                    case "SYSTEM.DOUBLE":
+                        sql.Append(" double");
+                        isNumeric = true;
+                        break;
+                    case "SYSTEM.DECIMAL":
+                        sql.AppendFormat(" decimal(18, 6)");
+                        isNumeric = true;
+                        break;
+                    default:
+                        sql.AppendFormat(" nvarchar({0})", dataTable.Columns[i].MaxLength);
+                        break;
+                }
+
+                if (dataTable.Columns[i].AutoIncrement)
+                {
+                    sql.AppendFormat(" IDENTITY({0},{1})",
+                        dataTable.Columns[i].AutoIncrementSeed,
+                        dataTable.Columns[i].AutoIncrementStep);
+                }
+                else
+                {
+                    // DataColumns will add a blank DefaultValue for any AutoIncrement column. 
+                    // We only want to create an ALTER statement for those columns that are not set to AutoIncrement. 
+                    if (dataTable.Columns[i].DefaultValue != System.DBNull.Value)
+                    {
+                        if (usesColumnDefault)
+                        {
+                            if (isNumeric)
+                            {
+                                alterSql.AppendFormat("\nALTER TABLE [{0}] ADD CONSTRAINT [DF_{0}_{1}]  DEFAULT ({2}) FOR [{1}];",
+                                    sqlTableName,
+                                    dataTable.Columns[i].ColumnName,
+                                    dataTable.Columns[i].DefaultValue);
+                            }
+                            else
+                            {
+                                alterSql.AppendFormat("\nALTER TABLE [{0}] ADD CONSTRAINT [DF_{0}_{1}]  DEFAULT ('{2}') FOR [{1}];",
+                                    sqlTableName,
+                                    dataTable.Columns[i].ColumnName,
+                                    dataTable.Columns[i].DefaultValue);
+                            }
+                        }
+                        else
+                        {
+                            // Default values on Date columns, e.g., "DateTime.Now" will not translate to SQL.
+                            // This inspects the caption for a simple XML string to see if there is a SQL compliant default value, e.g., "GETDATE()".
+                            try
+                            {
+                                System.Xml.XmlDocument xml = new System.Xml.XmlDocument();
+
+                                xml.LoadXml(dataTable.Columns[i].Caption);
+
+                                alterSql.AppendFormat("\nALTER TABLE {0} ADD CONSTRAINT [DF_{0}_{1}]  DEFAULT ({2}) FOR [{1}];",
+                                    sqlTableName,
+                                    dataTable.Columns[i].ColumnName,
+                                    xml.GetElementsByTagName("defaultValue")[0].InnerText);
+                            }
+                            catch
+                            {
+                                // Handle
+                            }
+                        }
+                    }
+                }
+
+                if (!dataTable.Columns[i].AllowDBNull)
+                {
+                    sql.Append(" NOT NULL");
+                }
+
+                sql.Append(",");
+            }
+
+            if (dataTable.PrimaryKey.Length > 0)
+            {
+                StringBuilder primaryKeySql = new StringBuilder();
+
+                primaryKeySql.AppendFormat("\n\tCONSTRAINT PK_{0} PRIMARY KEY (", sqlTableName);
+
+                for (int i = 0; i < dataTable.PrimaryKey.Length; i++)
+                {
+                    primaryKeySql.AppendFormat("{0},", dataTable.PrimaryKey[i].ColumnName);
+                }
+
+                primaryKeySql.Remove(primaryKeySql.Length - 1, 1);
+                primaryKeySql.Append(")");
+
+                sql.Append(primaryKeySql);
+            }
+            else
+            {
+                sql.Remove(sql.Length - 1, 1);
+            }
+
+            sql.AppendFormat("\n);\n{0}", alterSql.ToString());
+
+            return sql.ToString();
+        }
 
         #endregion DataTable
 
