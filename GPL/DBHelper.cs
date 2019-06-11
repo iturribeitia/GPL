@@ -492,7 +492,7 @@ namespace GPL
         #region Bulk Insert
 
         /// <summary>
-        /// Do SqlBulkCopy of the givin DbDataReader
+        /// Do SqlBulkCopy of the givin DataTable
         /// </summary>
         /// <param name="ConnectionString">The connection string.</param>
         /// <param name="dataTable">The dt.</param>
@@ -523,7 +523,7 @@ namespace GPL
         }
 
         /// <summary>
-        /// Do SqlBulkCopy of the givin DbDataReader
+        /// Do SqlBulkCopy of the givin IDataReader
         /// </summary>
         /// <param name="ConnectionString">The connection string.</param>
         /// <param name="dataReader">The DataReader.</param>
