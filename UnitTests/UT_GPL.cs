@@ -418,7 +418,7 @@ namespace GPL.UnitTests
             }
 
 
-            Task T =  Utility.StartAndWaitAllThrottledAsync(tasks, 10);
+            Task T = Utility.StartAndWaitAllThrottledAsync(tasks, 10);
 
             Task.WaitAll(tasks.ToArray());
 
@@ -448,7 +448,7 @@ namespace GPL.UnitTests
             {
                 const string url = "http://www.json-generator.com/api/json/get/bVHreokWmq?indent=2";
                 //using (HttpResponseMessage response =  client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).Result)
-                using (HttpResponseMessage response =  client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult())
+                using (HttpResponseMessage response = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult())
                 //using (Stream streamToReadFrom = response.Content.ReadAsStreamAsync().Result)
                 using (Stream streamToReadFrom = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
@@ -485,6 +485,18 @@ namespace GPL.UnitTests
 
             Assert.IsInstanceOfType(ii, typeof(Image));
 
+        }
+
+        [TestMethod]
+        public void Extensions_T010_In()
+        {
+            bool RetVal = false;
+
+            string myStr = "str3";
+
+            RetVal = myStr.In("str1", "str2", "str3", "str4");
+
+            Assert.IsTrue(RetVal);
         }
 
         private void CountAndWait(int count = 10, int milisecondsToWait = 5000)

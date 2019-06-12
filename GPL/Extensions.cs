@@ -615,6 +615,13 @@ namespace GPL
             return result;
         }
 
+        /// <summary>
+        /// Return true if the params T[] list contains the this T value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
         public static bool In<T>(this T value, params T[] list)
         {
             return list.Contains(value);
