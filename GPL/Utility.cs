@@ -38,6 +38,7 @@
 */
 
 using GenericParsing;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,6 +60,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
+using System.Xml;
 
 namespace GPL
 {
@@ -742,6 +744,21 @@ where TException : Exception
 
                 return parser.GetDataTable();
             }
+        }
+
+        /// <summary>
+        /// Convert a json string to a DataSet
+        /// </summary>
+        /// <param name="jsonMessage">The json message</param>
+        /// <returns>A DataSet with the data from the json message</returns>
+        public static DataSet GetDataSetFromJson(string jsonMessage)
+        {
+            XmlDocument xml = (XmlDocument)JsonConvert.DeserializeXmlNode(jsonMessage);
+            DataSet ds = new DataSet("Json Data");
+            XmlReader xr = new XmlNodeReader(xml);
+            ds.ReadXml(xr);
+
+            return ds;
         }
 
         #endregion File Operations

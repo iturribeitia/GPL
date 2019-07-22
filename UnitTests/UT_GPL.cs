@@ -253,6 +253,20 @@ namespace GPL.UnitTests
         }
 
         [TestMethod]
+        public void Utility_T007_GetDataSetFromJson()
+        {
+            var a = Utility.GetCurrentExecutablePath();
+            var b = new FileInfo(a).Name;
+            a = a.Replace(@"\bin\Debug\" + b, @"\App_Data\Files\DataFiles\Computer.json");
+
+            string json = System.IO.File.ReadAllText(a);
+
+            var Result = Utility.GetDataSetFromJson(json);
+
+            Assert.IsInstanceOfType(Result, typeof(DataSet));
+        }
+
+        [TestMethod]
         public void Extensions_T001_TextReader_ReadLines()
         {
             //string a = @"\\app.diablo.corelogic.com\LTL\FULFILLMENTS\CMAS\Ohio Housing Finance Agency\AKZA-8N1JW\OHFA_HHF_CoreLogic_20170719\master_pii_table.dat";

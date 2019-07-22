@@ -1,0 +1,2187 @@
+﻿{
+  "computer": {
+    "general": {
+      "id": 68,
+      "name": "cts’s iMac Pro",
+      "mac_address": "00:0C:29:6E:5D:88",
+      "alt_mac_address": "",
+      "ip_address": "192.168.140.1",
+      "last_reported_ip": "172.16.37.129",
+      "serial_number": "VMkli5fjrg1d",
+      "udid": "564DB876-65AD-A415-3669-27FE266E5D88",
+      "jamf_version": "10.11.1-t1553545638",
+      "platform": "Mac",
+      "barcode_1": "",
+      "barcode_2": "",
+      "asset_tag": "",
+      "remote_management": {
+        "managed": true,
+        "management_username": "svc_jamf",
+        "management_password_sha256": "53a4efd2b1195baf658713aa50b88157d8728fd6b24b560a0ce2508c1205eb7e"
+      },
+      "mdm_capable": true,
+      "mdm_capable_users": {
+        "mdm_capable_user": "cts"
+      },
+      "management_status": {
+        "enrolled_via_dep": false,
+        "user_approved_enrollment": true,
+        "user_approved_mdm": true
+      },
+      "report_date": "2019-07-08 03:10:15",
+      "report_date_epoch": 1562555415670,
+      "report_date_utc": "2019-07-08T03:10:15.670+0000",
+      "last_contact_time": "2019-07-08 03:09:34",
+      "last_contact_time_epoch": 1562555374964,
+      "last_contact_time_utc": "2019-07-08T03:09:34.964+0000",
+      "initial_entry_date": "2019-07-08",
+      "initial_entry_date_epoch": 1562554120156,
+      "initial_entry_date_utc": "2019-07-08T02:48:40.156+0000",
+      "last_cloud_backup_date_epoch": 0,
+      "last_cloud_backup_date_utc": "",
+      "last_enrolled_date_epoch": 1562554165775,
+      "last_enrolled_date_utc": "2019-07-08T02:49:25.775+0000",
+      "distribution_point": "",
+      "sus": "FL1CDJAMFDP01 - Peak 10 Software Update Server (DEV)",
+      "netboot_server": "WE8CDJAMFDP01 - Phase 8 NetBoot Server (DEV)",
+      "site": {
+        "id": 4,
+        "name": "Toronto, ON"
+      },
+      "itunes_store_account_is_active": false
+    },
+    "location": {
+      "username": "cts",
+      "realname": "Hardeep Chana",
+      "real_name": "Hardeep Chana",
+      "email_address": "Hardeep_Chana@ultimatesoftware.com",
+      "position": "Desktop Quality Analyst",
+      "phone": "4378363729",
+      "phone_number": "4378363729",
+      "department": "",
+      "building": "",
+      "room": "144 Bloor St. West Suite 400"
+    },
+    "purchasing": {
+      "is_purchased": true,
+      "is_leased": false,
+      "po_number": "",
+      "vendor": "",
+      "applecare_id": "",
+      "purchase_price": "",
+      "purchasing_account": "",
+      "po_date": "",
+      "po_date_epoch": 0,
+      "po_date_utc": "",
+      "warranty_expires": "",
+      "warranty_expires_epoch": 0,
+      "warranty_expires_utc": "",
+      "lease_expires": "",
+      "lease_expires_epoch": 0,
+      "lease_expires_utc": "",
+      "life_expectancy": 0,
+      "purchasing_contact": "",
+      "os_applecare_id": "",
+      "os_maintenance_expires": "",
+      "attachments": []
+    },
+    "peripherals": [],
+    "hardware": {
+      "make": "Apple",
+      "model": "iMac Pro Intel (Retina 5k, 27-inch, Late 2017)",
+      "model_identifier": "iMacPro1,1",
+      "os_name": "Mac OS X",
+      "os_version": "10.14.5",
+      "os_build": "18F132",
+      "master_password_set": false,
+      "active_directory_status": "Not Bound",
+      "service_pack": "",
+      "processor_type": "",
+      "processor_architecture": "x86_64",
+      "processor_speed": 3040,
+      "processor_speed_mhz": 3040,
+      "number_processors": 2,
+      "number_cores": 2,
+      "total_ram": 4096,
+      "total_ram_mb": 4096,
+      "boot_rom": "VMW71.00V.12343141.B64.1902160724",
+      "bus_speed": 0,
+      "bus_speed_mhz": 0,
+      "battery_capacity": -1,
+      "cache_size": 256,
+      "cache_size_kb": 256,
+      "available_ram_slots": 127,
+      "optical_drive": "NECVMWar VMware SATA CD01",
+      "nic_speed": "10/100/1000",
+      "smc_version": "2.8f0",
+      "ble_capable": false,
+      "sip_status": "Enabled",
+      "gatekeeper_status": "App Store and identified developers",
+      "xprotect_version": "2101",
+      "institutional_recovery_key": "Not Present",
+      "disk_encryption_configuration": "",
+      "filevault2_users": [
+        "cts"
+      ],
+      "storage": [
+        {
+          "disk": "disk0",
+          "model": "VMware Virtual SATA Hard Drive",
+          "revision": "00000001",
+          "serial_number": "00000000000000000001",
+          "size": 43981,
+          "drive_capacity_mb": 43981,
+          "connection_type": "NO",
+          "smart_status": "",
+          "partition": {
+            "name": "Macintosh HD (Boot Partition)",
+            "size": 40760,
+            "type": "boot",
+            "partition_capacity_mb": 40760,
+            "percentage_full": 37,
+            "filevault_status": "Not Encrypted",
+            "filevault_percent": 0,
+            "filevault2_status": "Not Encrypted",
+            "filevault2_percent": 0,
+            "boot_drive_available_mb": 27708,
+            "lvgUUID": "",
+            "lvUUID": "",
+            "pvUUID": ""
+          }
+        }
+      ],
+      "mapped_printers": []
+    },
+    "certificates": [
+      {
+        "common_name": "USCORP-CA",
+        "identity": false,
+        "expires_utc": "2035-06-08T14:42:30.000+0000",
+        "expires_epoch": 2064926550000,
+        "name": ""
+      },
+      {
+        "common_name": "com.apple.kerberos.kdc",
+        "identity": true,
+        "expires_utc": "2039-07-03T02:45:29.000+0000",
+        "expires_epoch": 2193273929000,
+        "name": ""
+      },
+      {
+        "common_name": "Ultimate Software JSS Built-in Certificate Authority",
+        "identity": false,
+        "expires_utc": "2028-12-11T16:48:34.000+0000",
+        "expires_epoch": 1860166114000,
+        "name": ""
+      },
+      {
+        "common_name": "JSS Built-In Signing Certificate",
+        "identity": false,
+        "expires_utc": "2023-12-11T16:48:35.000+0000",
+        "expires_epoch": 1702313315000,
+        "name": ""
+      },
+      {
+        "common_name": "USCORP-CA",
+        "identity": false,
+        "expires_utc": "2031-01-25T15:48:29.000+0000",
+        "expires_epoch": 1927122509000,
+        "name": ""
+      },
+      {
+        "common_name": "com.apple.systemdefault",
+        "identity": true,
+        "expires_utc": "2039-07-03T02:45:28.000+0000",
+        "expires_epoch": 2193273928000,
+        "name": ""
+      },
+      {
+        "common_name": "D4413087-90B7-462D-A231-72A151D867B8",
+        "identity": true,
+        "expires_utc": "2024-07-08T02:48:54.000+0000",
+        "expires_epoch": 1720406934000,
+        "name": ""
+      }
+    ],
+    "software": {
+      "unix_executables": [],
+      "licensed_software": [],
+      "installed_by_casper": [
+        "Absolute_ComputraceAgent_7_7_0_3_21556_Installer.pkg",
+        "BBEdit.pkg",
+        "Dell_EncryptionEnterprise_10_1_0_8425_Installer.pkg",
+        "FireEye_HXAgent_29_7_8_Installer.pkg",
+        "ForeScout_SecureConnector_15_3_Installer.pkg",
+        "Google_Chrome_74_0_3729_169_Installer.pkg",
+        "Google_DriveFileStream_31_0_16_0_Installer.pkg",
+        "Google_HangoutsChat_18_11_171_Installer.pkg",
+        "Jamf_JamfComposer_10_11_1_Installer.pkg",
+        "McAfee_EndpointSecurity_10_5_8_Installer.pkg",
+        "PaloAlto_GlobalProtect_5_0_2_Installer.pkg"
+      ],
+      "installed_by_installer_swu": [
+        "bbedit",
+        "caspercomposer",
+        "com.absolute.computrace.ins.pkg",
+        "com.absolute.dds.CtesComponent",
+        "com.apple.pkg.Core",
+        "com.apple.pkg.EmbeddedOSFirmware",
+        "com.apple.pkg.SecureBoot",
+        "com.dell.ddp.pkg.apps",
+        "com.dell.ems.pkg",
+        "com.fireeye.xagt",
+        "com.github.osxfuse.pkg.Core",
+        "com.google.drivefs",
+        "com.google.drivefs.shortcuts",
+        "com.google.pkg.Keystone",
+        "com.jamfsoftware.osxenrollment",
+        "com.mcafee.dxl",
+        "com.mcafee.mscui",
+        "com.mcafee.pkg.StatefulFirewall",
+        "com.mcafee.pkg.utility",
+        "com.mcafee.pkg.WebProtection",
+        "com.mcafee.ssm.atp",
+        "com.mcafee.ssm.fmp",
+        "com.mcafee.virusscan",
+        "com.paloaltonetworks.globalprotect.pkg",
+        "comp.nai.cmamac",
+        "dellencryptionenterprise10108425",
+        "fireeyehxagent2978installer",
+        "forescoutsecureconnection",
+        "googlechrome",
+        "googlehangoutschat1811171installer",
+        "mcafeeens10057"
+      ],
+      "cached_by_casper": [],
+      "available_software_updates": [],
+      "available_updates": {},
+      "running_services": [
+        "com.absolute.abtsvcd",
+        "com.absolute.ctesservice",
+        "com.absolute.ctesservice.avp",
+        "com.absolute.ctesservice.hdc",
+        "com.absolute.rpcgeo",
+        "com.absolute.rpcnet",
+        "com.apple.accessoryd",
+        "com.apple.AccountPolicyHelper",
+        "com.apple.adid",
+        "com.apple.afpfs_afpLoad",
+        "com.apple.afpfs_checkafp",
+        "com.apple.AirPlayXPCHelper",
+        "com.apple.airport.wps",
+        "com.apple.airportd",
+        "com.apple.akd",
+        "com.apple.alf",
+        "com.apple.AmbientDisplayAgent",
+        "com.apple.analyticsd",
+        "com.apple.apfsd",
+        "com.apple.applefileutil",
+        "com.apple.AppleQEMUGuestAgent",
+        "com.apple.appleseed.fbahelperd",
+        "com.apple.applessdstatistics",
+        "com.apple.apsd",
+        "com.apple.aslmanager",
+        "com.apple.AssetCache.builtin",
+        "com.apple.AssetCacheLocatorService",
+        "com.apple.AssetCacheManagerService",
+        "com.apple.AssetCacheTetheratorService",
+        "com.apple.audio.AudioComponentRegistrar",
+        "com.apple.audio.coreaudiod",
+        "com.apple.audio.systemsoundserverd",
+        "com.apple.auditd",
+        "com.apple.authd",
+        "com.apple.autofsd",
+        "com.apple.automountd",
+        "com.apple.avbdeviced",
+        "com.apple.awacsd",
+        "com.apple.awdd",
+        "com.apple.backupd",
+        "com.apple.backupd-helper",
+        "com.apple.biokitaggdd",
+        "com.apple.biometrickitd",
+        "com.apple.bluetoothaudiod",
+        "com.apple.bluetoothd",
+        "com.apple.bluetoothReporter",
+        "com.apple.bnepd",
+        "com.apple.bootinstalld",
+        "com.apple.bosreporter",
+        "com.apple.boswatcher",
+        "com.apple.bridgeOSUpdateProxy",
+        "com.apple.bsd.dirhelper",
+        "com.apple.captiveagent",
+        "com.apple.cfnetwork.cfnetworkagent",
+        "com.apple.cfprefsd.xpc.daemon",
+        "com.apple.cmio.AppleCameraAssistant",
+        "com.apple.cmio.AVCAssistant",
+        "com.apple.cmio.IIDCVideoAssistant",
+        "com.apple.cmio.iOSScreenCaptureAssistant",
+        "com.apple.cmio.registerassistantservice",
+        "com.apple.cmio.VDCAssistant",
+        "com.apple.CodeSigningHelper",
+        "com.apple.colorsync.displayservices",
+        "com.apple.colorsyncd",
+        "com.apple.CommCenterRootHelper",
+        "com.apple.commerced",
+        "com.apple.configd",
+        "com.apple.contextstored",
+        "com.apple.CoreAuthentication.daemon",
+        "com.apple.corebrightnessd",
+        "com.apple.corecaptured",
+        "com.apple.coreduetd",
+        "com.apple.CoreRAID",
+        "com.apple.coreservices.appleevents",
+        "com.apple.coreservices.launchservicesd",
+        "com.apple.coreservices.sharedfilelistd",
+        "com.apple.coreservicesd",
+        "com.apple.corestorage.corestoraged",
+        "com.apple.corestorage.corestoragehelperd",
+        "com.apple.coresymbolicationd",
+        "com.apple.CrashReporterSupportHelper",
+        "com.apple.CryptoTokenKit.ahp",
+        "com.apple.CSCSupportd",
+        "com.apple.csrutil.report",
+        "com.apple.ctkd",
+        "com.apple.cvmsServ",
+        "com.apple.dasd",
+        "com.apple.DataDetectorsSourceAccess",
+        "com.apple.defragx",
+        "com.apple.DesktopServicesHelper",
+        "com.apple.diagnosticd",
+        "com.apple.diagnosticextensions.osx.bluetooth.helper",
+        "com.apple.diagnosticextensions.osx.getmobilityinfo.helper",
+        "com.apple.diagnosticextensions.osx.spotlight.helper",
+        "com.apple.diagnosticextensions.osx.timemachine.helper",
+        "com.apple.diagnosticextensions.osx.wifi.helper",
+        "com.apple.diskarbitrationd",
+        "com.apple.diskmanagementd",
+        "com.apple.diskmanagementstartup",
+        "com.apple.displaypolicyd",
+        "com.apple.distnoted.xpc.daemon",
+        "com.apple.dmd",
+        "com.apple.dpaudiothru",
+        "com.apple.dpd",
+        "com.apple.dprivacyd",
+        "com.apple.driver.eficheck",
+        "com.apple.driver.ethcheck",
+        "com.apple.dspluginhelperd",
+        "com.apple.DumpGPURestart",
+        "com.apple.DumpPanic",
+        "com.apple.dvdplayback.setregion",
+        "com.apple.dynamic_pager",
+        "com.apple.eapolcfg_auth",
+        "com.apple.efilogin-helper",
+        "com.apple.EmbeddedOSInstallService",
+        "com.apple.emond",
+        "com.apple.emond.aslmanager",
+        "com.apple.eoshostd",
+        "com.apple.familycontrols",
+        "com.apple.FileCoordination",
+        "com.apple.findmymacd",
+        "com.apple.findmymacmessenger",
+        "com.apple.fontmover",
+        "com.apple.FontWorker",
+        "com.apple.fpsd",
+        "com.apple.fseventsd",
+        "com.apple.GameController.gamecontrollerd",
+        "com.apple.gkreport",
+        "com.apple.GSSCred",
+        "com.apple.gssd",
+        "com.apple.hdiejectd",
+        "com.apple.hidd",
+        "com.apple.iBooksX-SecureUserDefaults",
+        "com.apple.icloud.findmydeviced",
+        "com.apple.iconservices.iconservicesagent",
+        "com.apple.iconservices.iconservicesd",
+        "com.apple.IFCStart",
+        "com.apple.ifdreader",
+        "com.apple.installandsetup.systemmigrationd",
+        "com.apple.installd",
+        "com.apple.InstallerDiagnostics.installerdiagd",
+        "com.apple.InstallerDiagnostics.installerdiagwatcher",
+        "com.apple.InstallerProgress",
+        "com.apple.internal.aupbregistrarservice",
+        "com.apple.IOAccelMemoryInfoCollector",
+        "com.apple.IOBluetoothUSBDFU",
+        "com.apple.iokit.ioserviceauthorized",
+        "com.apple.ionodecache",
+        "com.apple.kcproxy",
+        "com.apple.Kerberos.digest-service",
+        "com.apple.Kerberos.kadmind",
+        "com.apple.Kerberos.kcm",
+        "com.apple.Kerberos.kdc",
+        "com.apple.Kerberos.kpasswdd",
+        "com.apple.KernelEventAgent",
+        "com.apple.kextd",
+        "com.apple.kuncd",
+        "com.apple.Localization.SetDefaultsService",
+        "com.apple.locationd",
+        "com.apple.lockd",
+        "com.apple.logd",
+        "com.apple.logind",
+        "com.apple.loginwindow",
+        "com.apple.logkextloadsd",
+        "com.apple.lsd",
+        "com.apple.ManagedClient",
+        "com.apple.ManagedClient.cloudconfigurationd",
+        "com.apple.ManagedClient.enroll",
+        "com.apple.mbsystemadministration",
+        "com.apple.mbusertrampoline",
+        "com.apple.mdmclient.daemon",
+        "com.apple.mdmclient.daemon.runatboot",
+        "com.apple.mDNSResponder.reloaded",
+        "com.apple.mDNSResponderHelper.reloaded",
+        "com.apple.mediaremoted",
+        "com.apple.metadata.mds",
+        "com.apple.metadata.mds.index",
+        "com.apple.metadata.mds.scan",
+        "com.apple.metadata.mds.spindump",
+        "com.apple.mobile.keybagd",
+        "com.apple.MobileAccessoryUpdater",
+        "com.apple.mobileactivationd",
+        "com.apple.mobileassetd",
+        "com.apple.MobileFileIntegrity",
+        "com.apple.MRTd",
+        "com.apple.msrpc.lsarpc",
+        "com.apple.msrpc.mdssvc",
+        "com.apple.msrpc.netlogon",
+        "com.apple.msrpc.srvsvc",
+        "com.apple.msrpc.wkssvc",
+        "com.apple.multiversed",
+        "com.apple.nehelper",
+        "com.apple.nesessionmanager",
+        "com.apple.netauth.sys.auth",
+        "com.apple.netauth.sys.gui",
+        "com.apple.netbiosd",
+        "com.apple.NetworkSharing",
+        "com.apple.newsyslog",
+        "com.apple.nfcd",
+        "com.apple.nfrestore",
+        "com.apple.nfsconf",
+        "com.apple.nfsd",
+        "com.apple.nlcd",
+        "com.apple.noticeboard.state",
+        "com.apple.notifyd",
+        "com.apple.nsurlsessiond_privileged",
+        "com.apple.nsurlstoraged",
+        "com.apple.ocspd",
+        "com.apple.opendirectoryd",
+        "com.apple.osanalytics.osanalyticshelper",
+        "com.apple.PCIELaneConfigTool",
+        "com.apple.PerformanceAnalysis.animationperfd",
+        "com.apple.periodic-daily",
+        "com.apple.periodic-monthly",
+        "com.apple.periodic-weekly",
+        "com.apple.pfctl",
+        "com.apple.pfd",
+        "com.apple.postfix.master",
+        "com.apple.postfix.newaliases",
+        "com.apple.powerd",
+        "com.apple.powerd.swd",
+        "com.apple.preferences.timezone.admintool",
+        "com.apple.printtool.daemon",
+        "com.apple.ProcessPanicReport",
+        "com.apple.racoon",
+        "com.apple.rapportd",
+        "com.apple.RemoteDesktop.PrivilegeProxy",
+        "com.apple.remotemanagementd",
+        "com.apple.RemotePairTool",
+        "com.apple.ReportCrash.Root",
+        "com.apple.ReportCrash.Root.Self",
+        "com.apple.ReportMemoryException",
+        "com.apple.ReportPanicService",
+        "com.apple.revisiond",
+        "com.apple.RFBEventHelper",
+        "com.apple.rootless.init",
+        "com.apple.rpcbind",
+        "com.apple.rtcreportingd",
+        "com.apple.SafeEjectGPUStartupDaemon",
+        "com.apple.sandboxd",
+        "com.apple.SCHelper",
+        "com.apple.screensharing",
+        "com.apple.scsid",
+        "com.apple.secinitd",
+        "com.apple.security.agent.login",
+        "com.apple.security.agent.login.00000000-0000-0000-0000-0000000186A6",
+        "com.apple.security.agent.login.00000000-0000-0000-0000-0000000186B8",
+        "com.apple.security.authhost",
+        "com.apple.security.authhost.00000000-0000-0000-0000-0000000186A6",
+        "com.apple.security.authhost.00000000-0000-0000-0000-0000000186B8",
+        "com.apple.security.syspolicy",
+        "com.apple.securityd",
+        "com.apple.securityd_service",
+        "com.apple.seld",
+        "com.apple.sessionlogoutd",
+        "com.apple.signpost.signpost_reporter",
+        "com.apple.siri.acousticsignature",
+        "com.apple.smb.preferences",
+        "com.apple.softwareupdate_download_service",
+        "com.apple.softwareupdated",
+        "com.apple.speech.speechsynthesisd",
+        "com.apple.spindump",
+        "com.apple.startupdiskhelper",
+        "com.apple.statd.notify",
+        "com.apple.storagekitd",
+        "com.apple.storeaccountd.daemon",
+        "com.apple.storeagent.daemon",
+        "com.apple.storeassetd.daemon",
+        "com.apple.storedownloadd.daemon",
+        "com.apple.storeinstalld",
+        "com.apple.storereceiptinstaller",
+        "com.apple.SubmitDiagInfo",
+        "com.apple.suhelperd",
+        "com.apple.symptomsd",
+        "com.apple.sysdiagnose",
+        "com.apple.sysdiagnose_helper",
+        "com.apple.syslogd",
+        "com.apple.sysmond",
+        "com.apple.system_installd",
+        "com.apple.systemadministration.writeconfig",
+        "com.apple.systemkeychain",
+        "com.apple.systempreferences.cacheAssistant",
+        "com.apple.systemstats.analysis",
+        "com.apple.systemstats.daily",
+        "com.apple.tailspind",
+        "com.apple.taskgated",
+        "com.apple.taskgated-helper",
+        "com.apple.tccd.system",
+        "com.apple.testmanagerd",
+        "com.apple.thermald",
+        "com.apple.timed",
+        "com.apple.timezoneupdates.tzd",
+        "com.apple.touchbarserver",
+        "com.apple.trustd",
+        "com.apple.TrustEvaluationAgent.system",
+        "com.apple.tzlinkd",
+        "com.apple.ucupdate.plist",
+        "com.apple.uninstalld",
+        "com.apple.unmountassistant.sysagent",
+        "com.apple.UpdateSettings",
+        "com.apple.usbd",
+        "com.apple.usbmuxd",
+        "com.apple.UserEventAgent-System",
+        "com.apple.UserNotificationCenter",
+        "com.apple.var-db-dslocal-backup",
+        "com.apple.vsdbutil",
+        "com.apple.warmd",
+        "com.apple.watchdogd",
+        "com.apple.wifid",
+        "com.apple.wifiFirmwareLoader",
+        "com.apple.wifivelocityd",
+        "com.apple.WindowServer",
+        "com.apple.wirelessproxd",
+        "com.apple.WirelessRadioManager",
+        "com.apple.wwand",
+        "com.apple.xartstorageremoted",
+        "com.apple.xpc.roleaccountd",
+        "com.apple.xpc.smd",
+        "com.apple.xpc.uscwoap",
+        "com.apple.xtyped",
+        "com.dell.ddp.agent",
+        "com.dell.ems.daemon",
+        "com.dell.ems.mounter",
+        "com.fireeye.xagt",
+        "com.google.keystone.daemon",
+        "com.jamf.management.daemon",
+        "com.mcafee.aac",
+        "com.mcafee.agent.ma",
+        "com.mcafee.agent.macmn",
+        "com.mcafee.ssm.Eupdate",
+        "com.mcafee.ssm.ScanManager",
+        "com.mcafee.virusscan.fmpd",
+        "com.mcafee.virusscan.ssm.ScanFactory",
+        "com.openssh.sshd",
+        "com.vix.cron",
+        "org.cups.cupsd"
+      ],
+      "applications": [
+        {
+          "name": "Activity Monitor.app",
+          "path": "/Applications/Utilities/Activity Monitor.app",
+          "version": "10.14"
+        },
+        {
+          "name": "AirPort Utility.app",
+          "path": "/Applications/Utilities/AirPort Utility.app",
+          "version": "6.3.9"
+        },
+        {
+          "name": "App Store.app",
+          "path": "/Applications/App Store.app",
+          "version": "3.0"
+        },
+        {
+          "name": "Audio MIDI Setup.app",
+          "path": "/Applications/Utilities/Audio MIDI Setup.app",
+          "version": "3.3"
+        },
+        {
+          "name": "Automator.app",
+          "path": "/Applications/Automator.app",
+          "version": "2.9"
+        },
+        {
+          "name": "BBEdit.app",
+          "path": "/Applications/BBEdit.app",
+          "version": "12.5.2"
+        },
+        {
+          "name": "Bluetooth File Exchange.app",
+          "path": "/Applications/Utilities/Bluetooth File Exchange.app",
+          "version": "6.0.12"
+        },
+        {
+          "name": "Books.app",
+          "path": "/Applications/Books.app",
+          "version": "1.19"
+        },
+        {
+          "name": "Boot Camp Assistant.app",
+          "path": "/Applications/Utilities/Boot Camp Assistant.app",
+          "version": "6.1.0"
+        },
+        {
+          "name": "Calculator.app",
+          "path": "/Applications/Calculator.app",
+          "version": "10.14"
+        },
+        {
+          "name": "Calendar.app",
+          "path": "/Applications/Calendar.app",
+          "version": "11.0"
+        },
+        {
+          "name": "Chat.app",
+          "path": "/Applications/Chat.app",
+          "version": "18.11.171"
+        },
+        {
+          "name": "Chess.app",
+          "path": "/Applications/Chess.app",
+          "version": "3.16"
+        },
+        {
+          "name": "ColorSync Utility.app",
+          "path": "/Applications/Utilities/ColorSync Utility.app",
+          "version": "4.14.0"
+        },
+        {
+          "name": "Composer.app",
+          "path": "/Applications/Jamf Pro/Composer.app",
+          "version": "10.11.1"
+        },
+        {
+          "name": "Console.app",
+          "path": "/Applications/Utilities/Console.app",
+          "version": "1.1"
+        },
+        {
+          "name": "Contacts.app",
+          "path": "/Applications/Contacts.app",
+          "version": "12.0"
+        },
+        {
+          "name": "Dashboard.app",
+          "path": "/Applications/Dashboard.app",
+          "version": "1.8"
+        },
+        {
+          "name": "Dictionary.app",
+          "path": "/Applications/Dictionary.app",
+          "version": "2.3.0"
+        },
+        {
+          "name": "Digital Color Meter.app",
+          "path": "/Applications/Utilities/Digital Color Meter.app",
+          "version": "5.13"
+        },
+        {
+          "name": "Disk Utility.app",
+          "path": "/Applications/Utilities/Disk Utility.app",
+          "version": "18.0"
+        },
+        {
+          "name": "FaceTime.app",
+          "path": "/Applications/FaceTime.app",
+          "version": "5.0"
+        },
+        {
+          "name": "Font Book.app",
+          "path": "/Applications/Font Book.app",
+          "version": "9.0"
+        },
+        {
+          "name": "ForeScout SecureConnector.app",
+          "path": "/Applications/ForeScout SecureConnector.app",
+          "version": "15.3.15303"
+        },
+        {
+          "name": "GlobalProtect.app",
+          "path": "/Applications/GlobalProtect.app",
+          "version": "5.0.2-13"
+        },
+        {
+          "name": "Google Chrome.app",
+          "path": "/Applications/Google Chrome.app",
+          "version": "74.0.3729.169"
+        },
+        {
+          "name": "Google Docs.app",
+          "path": "/Applications/Google Docs.app",
+          "version": "32.0"
+        },
+        {
+          "name": "Google Drive File Stream.app",
+          "path": "/Applications/Google Drive File Stream.app",
+          "version": "32.0"
+        },
+        {
+          "name": "Google Sheets.app",
+          "path": "/Applications/Google Sheets.app",
+          "version": "32.0"
+        },
+        {
+          "name": "Google Slides.app",
+          "path": "/Applications/Google Slides.app",
+          "version": "32.0"
+        },
+        {
+          "name": "Grapher.app",
+          "path": "/Applications/Utilities/Grapher.app",
+          "version": "2.7"
+        },
+        {
+          "name": "Home.app",
+          "path": "/Applications/Home.app",
+          "version": "3.0"
+        },
+        {
+          "name": "Image Capture.app",
+          "path": "/Applications/Image Capture.app",
+          "version": "8.0"
+        },
+        {
+          "name": "iTunes.app",
+          "path": "/Applications/iTunes.app",
+          "version": "12.9.5"
+        },
+        {
+          "name": "Keychain Access.app",
+          "path": "/Applications/Utilities/Keychain Access.app",
+          "version": "10.5"
+        },
+        {
+          "name": "Launchpad.app",
+          "path": "/Applications/Launchpad.app",
+          "version": "1.0"
+        },
+        {
+          "name": "Mail.app",
+          "path": "/Applications/Mail.app",
+          "version": "12.4"
+        },
+        {
+          "name": "Maps.app",
+          "path": "/Applications/Maps.app",
+          "version": "2.1"
+        },
+        {
+          "name": "McAfee Endpoint Security for Mac.app",
+          "path": "/Applications/McAfee Endpoint Security for Mac.app",
+          "version": "10.5.8"
+        },
+        {
+          "name": "Messages.app",
+          "path": "/Applications/Messages.app",
+          "version": "12.0"
+        },
+        {
+          "name": "Migration Assistant.app",
+          "path": "/Applications/Utilities/Migration Assistant.app",
+          "version": "10.14"
+        },
+        {
+          "name": "Mission Control.app",
+          "path": "/Applications/Mission Control.app",
+          "version": "1.2"
+        },
+        {
+          "name": "News.app",
+          "path": "/Applications/News.app",
+          "version": "4.3"
+        },
+        {
+          "name": "Notes.app",
+          "path": "/Applications/Notes.app",
+          "version": "4.6"
+        },
+        {
+          "name": "Photo Booth.app",
+          "path": "/Applications/Photo Booth.app",
+          "version": "10.0"
+        },
+        {
+          "name": "Photos.app",
+          "path": "/Applications/Photos.app",
+          "version": "4.0"
+        },
+        {
+          "name": "Preview.app",
+          "path": "/Applications/Preview.app",
+          "version": "10.1"
+        },
+        {
+          "name": "QuickTime Player.app",
+          "path": "/Applications/QuickTime Player.app",
+          "version": "10.5"
+        },
+        {
+          "name": "Reminders.app",
+          "path": "/Applications/Reminders.app",
+          "version": "6.0"
+        },
+        {
+          "name": "RingCentral Meetings.app",
+          "path": "/Applications/RingCentral Meetings.app",
+          "version": "7.0.136380.0312"
+        },
+        {
+          "name": "Safari.app",
+          "path": "/Applications/Safari.app",
+          "version": "12.1.1"
+        },
+        {
+          "name": "Screenshot.app",
+          "path": "/Applications/Utilities/Screenshot.app",
+          "version": "1.0"
+        },
+        {
+          "name": "Script Editor.app",
+          "path": "/Applications/Utilities/Script Editor.app",
+          "version": "2.11"
+        },
+        {
+          "name": "Self Service.app",
+          "path": "/Applications/Self Service.app",
+          "version": "10.11.1"
+        },
+        {
+          "name": "Siri.app",
+          "path": "/Applications/Siri.app",
+          "version": "1.0"
+        },
+        {
+          "name": "Stickies.app",
+          "path": "/Applications/Stickies.app",
+          "version": "10.2"
+        },
+        {
+          "name": "Stocks.app",
+          "path": "/Applications/Stocks.app",
+          "version": "1.0"
+        },
+        {
+          "name": "System Information.app",
+          "path": "/Applications/Utilities/System Information.app",
+          "version": "10.14"
+        },
+        {
+          "name": "System Preferences.app",
+          "path": "/Applications/System Preferences.app",
+          "version": "14.0"
+        },
+        {
+          "name": "Terminal.app",
+          "path": "/Applications/Utilities/Terminal.app",
+          "version": "2.9.5"
+        },
+        {
+          "name": "TextEdit.app",
+          "path": "/Applications/TextEdit.app",
+          "version": "1.14"
+        },
+        {
+          "name": "Time Machine.app",
+          "path": "/Applications/Time Machine.app",
+          "version": "1.3"
+        },
+        {
+          "name": "VoiceMemos.app",
+          "path": "/Applications/VoiceMemos.app",
+          "version": "2.0"
+        },
+        {
+          "name": "VoiceOver Utility.app",
+          "path": "/Applications/Utilities/VoiceOver Utility.app",
+          "version": "9"
+        }
+      ],
+      "fonts": [],
+      "plugins": [
+        {
+          "name": "nsIQTScriptablePlugin.xpt",
+          "path": "/Library/Internet Plug-Ins/Disabled Plug-Ins/nsIQTScriptablePlugin.xpt",
+          "version": "n/a"
+        },
+        {
+          "name": "QuickTime Plugin.plugin",
+          "path": "/Library/Internet Plug-Ins/Disabled Plug-Ins/QuickTime Plugin.plugin",
+          "version": "7.7.3"
+        },
+        {
+          "name": "Web Control.plugin",
+          "path": "/Library/Internet Plug-Ins/Web Control.plugin",
+          "version": "10.5.8"
+        }
+      ]
+    },
+    "extension_attributes": [
+      {
+        "id": 2,
+        "name": "Active Directory Organizational Unit",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 24,
+        "name": "Battery Cycle Count",
+        "type": "Number",
+        "value": ""
+      },
+      {
+        "id": 22,
+        "name": "Battery Health Status",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 21,
+        "name": "Chrome Extensions",
+        "type": "String",
+        "value": "NA"
+      },
+      {
+        "id": 9,
+        "name": "Default Browser",
+        "type": "String",
+        "value": "Undefined"
+      },
+      {
+        "id": 13,
+        "name": "Dell Encryption Enterprise Version",
+        "type": "String",
+        "value": "10.1.0"
+      },
+      {
+        "id": 10,
+        "name": "Department Information",
+        "type": "String",
+        "value": "606-Tech Services"
+      },
+      {
+        "id": 1,
+        "name": "Deployment Status",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 17,
+        "name": "FireEye Endpoint Agent Version",
+        "type": "String",
+        "value": "29.7.8"
+      },
+      {
+        "id": 18,
+        "name": "ForeScout SecureConnector Client Version",
+        "type": "String",
+        "value": "15.3.15303"
+      },
+      {
+        "id": 14,
+        "name": "Global Protect Client Version",
+        "type": "String",
+        "value": "5.0.2-13"
+      },
+      {
+        "id": 5,
+        "name": "Machine Host Name",
+        "type": "String",
+        "value": "ctss-iMac-Pro.local"
+      },
+      {
+        "id": 12,
+        "name": "Machine Reboot Time",
+        "type": "Date",
+        "value": "Jul 7 2019 19:44:50"
+      },
+      {
+        "id": 11,
+        "name": "Machine Uptime",
+        "type": "Date",
+        "value": "25 hrs"
+      },
+      {
+        "id": 7,
+        "name": "McAfee ENS Agent Version",
+        "type": "String",
+        "value": " 5.6.0.702"
+      },
+      {
+        "id": 15,
+        "name": "McAfee ENS Product Version",
+        "type": "String",
+        "value": "10.5.8"
+      },
+      {
+        "id": 20,
+        "name": "Migration Status",
+        "type": "String",
+        "value": "Not Migrated"
+      },
+      {
+        "id": 26,
+        "name": "mozilla-firefox",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 16,
+        "name": "Provision Status",
+        "type": "String",
+        "value": "Incomplete"
+      },
+      {
+        "id": 8,
+        "name": "Remote Login",
+        "type": "String",
+        "value": "On"
+      },
+      {
+        "id": 29,
+        "name": "SnagIT Last opened date",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 19,
+        "name": "Zoom Version",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 28,
+        "name": "Zoom Vulnerability System",
+        "type": "String",
+        "value": ""
+      },
+      {
+        "id": 27,
+        "name": "Zoom Vulnerability User",
+        "type": "String",
+        "value": ""
+      }
+    ],
+    "groups_accounts": {
+      "computer_group_memberships": [
+        "All Managed Clients",
+        "All Clients Non-Encrypted",
+        "All Clients with macOS Mojave (10.14)",
+        "All Clients without ForeScout Secure Connector",
+        "All Clients with Provision Status Incomplete",
+        "Computers without Firefox",
+        "Computers Battery Status Less then 75%",
+        "MacOS 10.10 or later - Practice",
+        "Battery Health - Practice"
+      ],
+      "local_accounts": [
+        {
+          "name": "_amavisd",
+          "realname": "AMaViS Daemon",
+          "uid": "83",
+          "home": "/var/virusmails",
+          "home_size": "-1MB",
+          "home_size_mb": -1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_analyticsd",
+          "realname": "Analytics Daemon",
+          "uid": "263",
+          "home": "/var/db/analyticsd",
+          "home_size": "1MB",
+          "home_size_mb": 1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_appleevents",
+          "realname": "AppleEvents Daemon",
+          "uid": "55",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_applepay",
+          "realname": "applepay Account",
+          "uid": "260",
+          "home": "/var/db/applepay",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_appowner",
+          "realname": "Application Owner",
+          "uid": "87",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_appserver",
+          "realname": "Application Server",
+          "uid": "79",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_appstore",
+          "realname": "Mac App Store Service",
+          "uid": "33",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_ard",
+          "realname": "Apple Remote Desktop",
+          "uid": "67",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_assetcache",
+          "realname": "Asset Cache Service",
+          "uid": "235",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_astris",
+          "realname": "Astris Services",
+          "uid": "245",
+          "home": "/var/db/astris",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_atsserver",
+          "realname": "ATS Server",
+          "uid": "97",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_avbdeviced",
+          "realname": "Ethernet AVB Device Daemon",
+          "uid": "229",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_calendar",
+          "realname": "Calendar",
+          "uid": "93",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_captiveagent",
+          "realname": "captiveagent",
+          "uid": "258",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_ces",
+          "realname": "Certificate Enrollment Service",
+          "uid": "32",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_clamav",
+          "realname": "ClamAV Daemon",
+          "uid": "82",
+          "home": "/var/virusmails",
+          "home_size": "-1MB",
+          "home_size_mb": -1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_cmiodalassistants",
+          "realname": "CoreMedia IO Assistants User",
+          "uid": "262",
+          "home": "/var/db/cmiodalassistants",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_coreaudiod",
+          "realname": "Core Audio Daemon",
+          "uid": "202",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_coremediaiod",
+          "realname": "Core Media IO Daemon",
+          "uid": "236",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_ctkd",
+          "realname": "ctkd Account",
+          "uid": "259",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_cvmsroot",
+          "realname": "CVMS Root",
+          "uid": "212",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_cvs",
+          "realname": "CVS Server",
+          "uid": "72",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_cyrus",
+          "realname": "Cyrus Administrator",
+          "uid": "77",
+          "home": "/var/imap",
+          "home_size": "-1MB",
+          "home_size_mb": -1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_datadetectors",
+          "realname": "DataDetectors",
+          "uid": "257",
+          "home": "/var/db/datadetectors",
+          "home_size": "1MB",
+          "home_size_mb": 1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_devdocs",
+          "realname": "Developer Documentation",
+          "uid": "59",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_devicemgr",
+          "realname": "Device Management Server",
+          "uid": "220",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_displaypolicyd",
+          "realname": "Display Policy Daemon",
+          "uid": "244",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_distnote",
+          "realname": "DistNote",
+          "uid": "241",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_dovecot",
+          "realname": "Dovecot Administrator",
+          "uid": "214",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_dovenull",
+          "realname": "Dovecot Authentication",
+          "uid": "227",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_dpaudio",
+          "realname": "DP Audio",
+          "uid": "215",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_eppc",
+          "realname": "Apple Events User",
+          "uid": "71",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_findmydevice",
+          "realname": "Find My Device Daemon",
+          "uid": "254",
+          "home": "/var/db/findmydevice",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_fpsd",
+          "realname": "FPS Daemon",
+          "uid": "265",
+          "home": "/var/db/fpsd",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_ftp",
+          "realname": "FTP Daemon",
+          "uid": "98",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_gamecontrollerd",
+          "realname": "Game Controller Daemon",
+          "uid": "247",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_geod",
+          "realname": "Geo Services Daemon",
+          "uid": "56",
+          "home": "/var/db/geod",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_hidd",
+          "realname": "HID Service User",
+          "uid": "261",
+          "home": "/var/db/hidd",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_iconservices",
+          "realname": "IconServices",
+          "uid": "240",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_installassistant",
+          "realname": "Install Assistant",
+          "uid": "25",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_installer",
+          "realname": "Installer",
+          "uid": "96",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_jabber",
+          "realname": "Jabber XMPP Server",
+          "uid": "84",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_kadmin_admin",
+          "realname": "Kerberos Admin Service",
+          "uid": "218",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_kadmin_changepw",
+          "realname": "Kerberos Change Password Service",
+          "uid": "219",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krb_anonymous",
+          "realname": "Open Directory Kerberos Anonymous",
+          "uid": "234",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krb_changepw",
+          "realname": "Open Directory Kerberos Change Password Service",
+          "uid": "232",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krb_kadmin",
+          "realname": "Open Directory Kerberos Admin Service",
+          "uid": "231",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krb_kerberos",
+          "realname": "Open Directory Kerberos",
+          "uid": "233",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krb_krbtgt",
+          "realname": "Open Directory Kerberos Ticket Granting Ticket",
+          "uid": "230",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krbfast",
+          "realname": "Kerberos FAST Account",
+          "uid": "246",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_krbtgt",
+          "realname": "Kerberos Ticket Granting Ticket",
+          "uid": "217",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_launchservicesd",
+          "realname": "_launchservicesd",
+          "uid": "239",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_lda",
+          "realname": "Local Delivery Agent",
+          "uid": "211",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_locationd",
+          "realname": "Location Daemon",
+          "uid": "205",
+          "home": "/var/db/locationd",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_lp",
+          "realname": "Printing Services",
+          "uid": "26",
+          "home": "/var/spool/cups",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_mailman",
+          "realname": "Mailman List Server",
+          "uid": "78",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_mbsetupuser",
+          "realname": "Setup User",
+          "uid": "248",
+          "home": "/var/setup",
+          "home_size": "-1MB",
+          "home_size_mb": -1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_mcxalr",
+          "realname": "MCX AppLaunch",
+          "uid": "54",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_mdnsresponder",
+          "realname": "mDNSResponder",
+          "uid": "65",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_mobileasset",
+          "realname": "MobileAsset User",
+          "uid": "253",
+          "home": "/var/ma",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_mysql",
+          "realname": "MySQL Server",
+          "uid": "74",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_netbios",
+          "realname": "NetBIOS",
+          "uid": "222",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_netstatistics",
+          "realname": "Network Statistics Daemon",
+          "uid": "228",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_networkd",
+          "realname": "Network Services",
+          "uid": "24",
+          "home": "/var/networkd",
+          "home_size": "2MB",
+          "home_size_mb": 2,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_nsurlsessiond",
+          "realname": "NSURLSession Daemon",
+          "uid": "242",
+          "home": "/var/db/nsurlsessiond",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_nsurlstoraged",
+          "realname": "NSURLStorage Daemon",
+          "uid": "243",
+          "home": "/var/db/nsurlstoraged",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_ondemand",
+          "realname": "On Demand Resource Daemon",
+          "uid": "249",
+          "home": "/var/db/ondemand",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_postfix",
+          "realname": "Postfix Mail Server",
+          "uid": "27",
+          "home": "/var/spool/postfix",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_postgres",
+          "realname": "PostgreSQL Server",
+          "uid": "216",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_qtss",
+          "realname": "QuickTime Streaming Server",
+          "uid": "76",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_reportmemoryexception",
+          "realname": "ReportMemoryException",
+          "uid": "269",
+          "home": "/var/db/reportmemoryexception",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_sandbox",
+          "realname": "Seatbelt",
+          "uid": "60",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_screensaver",
+          "realname": "Screensaver",
+          "uid": "203",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_scsd",
+          "realname": "Service Configuration Service",
+          "uid": "31",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_securityagent",
+          "realname": "SecurityAgent",
+          "uid": "92",
+          "home": "/var/db/securityagent",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_softwareupdate",
+          "realname": "Software Update Service",
+          "uid": "200",
+          "home": "/var/db/softwareupdate",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_spotlight",
+          "realname": "Spotlight",
+          "uid": "89",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_sshd",
+          "realname": "sshd Privilege separation",
+          "uid": "75",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_svn",
+          "realname": "SVN Server",
+          "uid": "73",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_taskgated",
+          "realname": "Task Gate Daemon",
+          "uid": "13",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_teamsserver",
+          "realname": "TeamsServer",
+          "uid": "94",
+          "home": "/var/teamsserver",
+          "home_size": "-1MB",
+          "home_size_mb": -1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_timed",
+          "realname": "Time Sync Daemon",
+          "uid": "266",
+          "home": "/var/db/timed",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_timezone",
+          "realname": "AutoTimeZoneDaemon",
+          "uid": "210",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_tokend",
+          "realname": "Token Daemon",
+          "uid": "91",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_trustevaluationagent",
+          "realname": "Trust Evaluation Agent",
+          "uid": "208",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_unknown",
+          "realname": "Unknown User",
+          "uid": "99",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_update_sharing",
+          "realname": "Update Sharing",
+          "uid": "95",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_usbmuxd",
+          "realname": "iPhone OS Device Helper",
+          "uid": "213",
+          "home": "/var/db/lockdown",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_uucp",
+          "realname": "Unix to Unix Copy Protocol",
+          "uid": "4",
+          "home": "/var/spool/uucp",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_warmd",
+          "realname": "Warm Daemon",
+          "uid": "224",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_webauthserver",
+          "realname": "Web Auth Server",
+          "uid": "221",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_windowserver",
+          "realname": "WindowServer",
+          "uid": "88",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_www",
+          "realname": "World Wide Web Server",
+          "uid": "70",
+          "home": "/Library/WebServer",
+          "home_size": "9MB",
+          "home_size_mb": 9,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_wwwproxy",
+          "realname": "WWW Proxy",
+          "uid": "252",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "_xserverdocs",
+          "realname": "macOS Server Documents Service",
+          "uid": "251",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "cts",
+          "realname": "cts",
+          "uid": "501",
+          "home": "/Users/cts",
+          "home_size": "122MB",
+          "home_size_mb": 122,
+          "administrator": true,
+          "filevault_enabled": true
+        },
+        {
+          "name": "daemon",
+          "realname": "System Services",
+          "uid": "1",
+          "home": "/var/root",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "dlp",
+          "realname": "DLP",
+          "uid": "499",
+          "home": "/Library/Application Support/Absolute/CTES/Components/DLP/Endpoint",
+          "home_size": "-1MB",
+          "home_size_mb": -1,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "mfe",
+          "realname": "McAfee Agent",
+          "uid": "502",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "nobody",
+          "realname": "Unprivileged User",
+          "uid": "-2",
+          "home": "/var/empty",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": false,
+          "filevault_enabled": false
+        },
+        {
+          "name": "root",
+          "realname": "System Administrator",
+          "uid": "0",
+          "home": "/var/root",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": true,
+          "filevault_enabled": false
+        },
+        {
+          "name": "svc_jamf",
+          "realname": "svc_jamf",
+          "uid": "80",
+          "home": "/private/var/svc_jamf",
+          "home_size": "0MB",
+          "home_size_mb": 0,
+          "administrator": true,
+          "filevault_enabled": false
+        }
+      ],
+      "user_inventories": {
+        "disable_automatic_login": true,
+        "user": {
+          "username": "mfe",
+          "password_history_depth": "",
+          "password_min_length": "",
+          "password_max_age": "",
+          "password_min_complex_characters": "",
+          "password_require_alphanumeric": "false"
+        }
+      }
+    },
+    "iphones": [],
+    "configuration_profiles": [
+      {
+        "id": 9,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": -1,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": 13,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": 21,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": 22,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": -2,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": 1,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": 11,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      },
+      {
+        "id": 6,
+        "name": "",
+        "uuid": "",
+        "is_removable": false
+      }
+    ]
+  }
+}

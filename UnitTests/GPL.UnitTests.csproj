@@ -89,6 +89,7 @@
     <Content Include="App_Data\Files\SQL_Scripts\ReCreateData.sql" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App_Data\Files\DataFiles\Computer.json" />
     <None Include="App_Data\Files\DelimitedFiles\Sample_CSV_File.csv" />
     <None Include="packages.config" />
   </ItemGroup>
