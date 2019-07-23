@@ -753,7 +753,8 @@ where TException : Exception
         /// <returns>A DataSet with the data from the json message</returns>
         public static DataSet GetDataSetFromJson(string jsonMessage)
         {
-            XmlDocument xml = (XmlDocument)JsonConvert.DeserializeXmlNode(jsonMessage);
+            /* https://blogs.msdn.microsoft.com/dilkushp/2013/10/31/easiest-way-of-loading-json-data-in-sql-using-c/ */
+            XmlDocument xml = JsonConvert.DeserializeXmlNode(jsonMessage);
             DataSet ds = new DataSet("Json Data");
             XmlReader xr = new XmlNodeReader(xml);
             ds.ReadXml(xr);
