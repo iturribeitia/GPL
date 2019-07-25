@@ -333,35 +333,38 @@ where TException : Exception
 
 
         /// <summary>
-        /// Invokes the method.
+        /// Retry a method.
         /// </summary>
+        /// <remarks>
+        /// This method retry a method until It runs successfully or reach the timesToRetry failing
+        /// </remarks>
+        /// <param name="method">Name of the method</param>
+        /// <param name="timesToRetry">Times to retry</param>
+        /// <param name="retryTimeout">Timeout between retries</param>
+        /// <param name="args">Arguments needed by the method</param>
+        /// <returns>The object returned by the method.</returns>
         /// <example>
+        /// <code>
+        /// /* This below example shows how to invoke a method without parameters that returns void. */
         /// Utility.RetryMethod(new Action(SomeMethodWithoutParametersReturnsVoid), 2, 500);
-        /// This below example shows ow to invoke a method with parameters that returns void.
-        /// Utility.RetryMethod(new Action<string, string, string, DatabaseManufacter, string, string, string, Int32, int, int>(DAHelper.DoSqlBulkCopy), 2, 500, scs, spn, tn, sdsmEnum, dcs, dpn, ftn, BulkRowsBuffer, BulkCommandTimeout, BulkBatchSize);
+        ///
+        /// /* This below example shows ow to invoke a method with parameters that returns void. */
+        /// Utility.RetryMethod(new Action&lt;string, string, string, DatabaseManufacter, string, string, string, Int32, int, int&gt;(DAHelper.DoSqlBulkCopy), 2, 500, scs, spn, tn, sdsmEnum, dcs, dpn, ftn, BulkRowsBuffer, BulkCommandTimeout, BulkBatchSize);
         /// 
-        /// A method that return a value.
+        /// /* A method that return a value. 
         /// You can define the delegate before or inside of the RetryMethod.
-        /// Before
-        /// Example with retries defining the delegate before and invoking in the Utility.RetryMethod note that the return type 'DataSet' is declared at the end, and the parameters types before.
-        /// var newfuction = new Func<string, CommandType, ConnectionState, DataSet>(dbh.GetDataSet);
-        /// Inside note that the return type is converted from the object return type to DataSet type.
+        ///
+        /// Example with retries defining the delegate before and invoking in the Utility.RetryMethod 
+        /// note that the return type 'DataSet' is declared at the end, and the parameters types before.
+        /// */
+        /// var newfuction = new Func&#60;string, CommandType, ConnectionState, DataSet&#62;(dbh.GetDataSet);
+        ///
+        /// /* Inside note that the return type is converted from the object return type to DataSet type. */
         /// DataSet rdr = (DataSet)Utility.RetryMethod(newfuction, 3, 3, CmdTextOK, CommandType.Text, ConnectionState.Open);
+        /// </code>
         /// </example>
-        /// <param name="method">The method, It could be an Action or a Func, Action returns void Func return some object.</param>
-        /// <param name="timesToRetry">The times to retry.</param>
-        /// <param name="retryTimeout">The retry timeout.</param>
-        /// <param name="args">The arguments.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">method</exception>
-        /// <exception cref="System.ArgumentException">
-        /// timesToRetry is < 0.
-        /// or
-        /// retryTimeout is < 0.
-        /// </exception>
-        /// <exception cref="System.AggregateException">
-        /// a AggregateException with all the exceptions that occurs in each retry.
-        ///</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when any parameter is invalid.</exception>
+        /// <exception cref="System.AggregateException">Thrown when the method fails more than the value of timesToRetry parameter.</exception>
         public static object RetryMethod(Delegate method, int timesToRetry, int retryTimeout, params object[] args)
         {
             // http://stackoverflow.com/questions/380198/how-to-pass-a-function-as-a-parameter-in-c
