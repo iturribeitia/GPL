@@ -48,9 +48,11 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Xml;
@@ -1336,6 +1338,82 @@ namespace GPL
         }
 
         #endregion stream
+
+        #region HttpContent
+        /// <summary>
+        /// Read a HttpContent and save to a file.
+        /// </summary>
+        /// <param name="content">this HttpContent</param>
+        /// <param name="filename">File name to save the HttpContent</param>
+        /// <param name="overwrite">true = overwrite existing files</param>
+        /// <returns></returns>
+        public static Task ReadAsFileAsync(this HttpContent content, string filename, bool overwrite)
+        {
+            string pathname = Path.GetFullPath(filename);
+            if (!overwrite && File.Exists(filename))
+            {
+                throw new InvalidOperationException(string.Format("File {0} already exists.", pathname));
+            }
+
+            FileStream fileStream = null;
+            try
+            {
+                fileStream = new FileStream(pathname, FileMode.Create, FileAccess.Write, FileShare.None);
+                return content.CopyToAsync(fileStream).ContinueWith(
+                    (copyTask) =>
+                    {
+                        fileStream.Close();
+                    });
+            }
+            catch
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Close();
+                }
+
+                throw;
+            }
+        }
+        #endregion HttpContent
+
+        #region ZipArchive
+        /// <summary>
+        /// Extract from zip file to a directory.
+        /// </summary>
+        /// <param name="archive">The ZIP file</param>
+        /// <param name="destinationDirectoryName">The destination directory</param>
+        /// <param name="overwrite">true = overwrite existing files</param>
+        public static void ExtractToDirectory(this ZipArchive archive, string destinationDirectoryName, bool overwrite)
+        {
+            if (!overwrite)
+            {
+                archive.ExtractToDirectory(destinationDirectoryName);
+                return;
+            }
+
+            DirectoryInfo di = Directory.CreateDirectory(destinationDirectoryName);
+            string destinationDirectoryFullPath = di.FullName;
+
+            foreach (ZipArchiveEntry file in archive.Entries)
+            {
+                string completeFileName = Path.GetFullPath(Path.Combine(destinationDirectoryFullPath, file.FullName));
+
+                if (!completeFileName.StartsWith(destinationDirectoryFullPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new IOException("Trying to extract file outside of destination directory. See this link for more info: https://snyk.io/research/zip-slip-vulnerability");
+                }
+
+                if (file.Name == "")
+                {// Assuming Empty for Directory
+                    Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
+                    continue;
+                }
+                file.ExtractToFile(completeFileName, true);
+            }
+        }
+
+        #endregion ZipArchive
 
     }
 
