@@ -38,6 +38,7 @@
 */
 
 using GenericParsing;
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -748,6 +749,53 @@ where TException : Exception
                 return parser.GetDataTable();
             }
         }
+
+        /// <summary>
+        /// Get a DataTable from a delimited file.
+        /// </summary>
+        /// <param name="fileFullpathName">File full path name</param>
+        /// <param name="delimiter">Delimiter</param>
+        /// <param name="hasFieldsEnclosedInQuotes">Has fields enclosed in quotes</param>
+        /// <returns></returns>
+        public static DataTable GetDataTableFromDelimitedFile(string fileFullpathName, string delimiter = ",", bool hasFieldsEnclosedInQuotes = true)
+        {
+            DataTable DelimitedData = new DataTable();
+            try
+            {
+                using (TextFieldParser DelimitedReader = new TextFieldParser(fileFullpathName))
+                {
+                    DelimitedReader.SetDelimiters(new string[] { delimiter });
+                    DelimitedReader.HasFieldsEnclosedInQuotes = hasFieldsEnclosedInQuotes;
+                    //read column names
+                    string[] colFields = DelimitedReader.ReadFields();
+                    foreach (string column in colFields)
+                    {
+                        DataColumn datecolumn = new DataColumn(column);
+                        datecolumn.AllowDBNull = true;
+                        DelimitedData.Columns.Add(datecolumn);
+                    }
+                    while (!DelimitedReader.EndOfData)
+                    {
+                        string[] fieldData = DelimitedReader.ReadFields();
+                        //Making empty value as null
+                        for (int i = 0; i < fieldData.Length; i++)
+                        {
+                            if (fieldData[i] == "")
+                            {
+                                fieldData[i] = null;
+                            }
+                        }
+                        DelimitedData.Rows.Add(fieldData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return DelimitedData;
+        }
+
 
         /// <summary>
         /// Convert a json string to a DataSet
