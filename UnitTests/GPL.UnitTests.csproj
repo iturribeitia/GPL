@@ -61,17 +61,12 @@
   <ItemGroup>
     <Compile Include="UT_GPL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UT_PoppuloAPIClient.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\GPL\GPL.csproj">
       <Project>{6cd92ace-0dd4-4a81-bbbe-7f090ac05a3f}</Project>
       <Name>GPL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PoppuloAPI\PoppuloAPI.csproj">
-      <Project>{696bb357-83b5-48e9-9b80-3d37eb2083f9}</Project>
-      <Name>PoppuloAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

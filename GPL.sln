@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPL", "GPL\GPL.csproj", "{6CD92ACE-0DD4-4A81-BBBE-7F090AC05A3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPL.UnitTests", "UnitTests\GPL.UnitTests.csproj", "{5064DF6B-17BA-4E73-90CA-A45986D5F2C6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoppuloAPI", "PoppuloAPI\PoppuloAPI.csproj", "{696BB357-83B5-48E9-9B80-3D37EB2083F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{5064DF6B-17BA-4E73-90CA-A45986D5F2C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5064DF6B-17BA-4E73-90CA-A45986D5F2C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5064DF6B-17BA-4E73-90CA-A45986D5F2C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{696BB357-83B5-48E9-9B80-3D37EB2083F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{696BB357-83B5-48E9-9B80-3D37EB2083F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{696BB357-83B5-48E9-9B80-3D37EB2083F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{696BB357-83B5-48E9-9B80-3D37EB2083F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
