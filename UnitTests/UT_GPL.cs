@@ -76,10 +76,24 @@ namespace GPL.UnitTests
         {
             var a = Utility.GetCurrentExecutablePath();
             var b = new FileInfo(a).Name;
+
+            a = a.Replace(@"\bin\Debug\" + b, @"\App_Data\Files\DelimitedFiles\Sample_CSV_File.csv");
+
+            var r = Utility.GetDataTableFromDelimitedFile(a, ",", true);
+
+            Assert.ReferenceEquals(r, new DataTable());
+            Assert.IsTrue(r.Rows.Count > 0);
+
+            a = Utility.GetCurrentExecutablePath();
+            b = new FileInfo(a).Name;
+
             a = a.Replace(@"\bin\Debug\" + b, @"\App_Data\Files\DelimitedFiles\Sample_Pipe_and_Quote_With_Headers.txt");
 
-            var r = Utility.GetDataTableFromDelimitedFile(a, true, true, '|', '"');
+            r = Utility.GetDataTableFromDelimitedFile(a, "|", true);
+
             Assert.ReferenceEquals(r, new DataTable());
+            Assert.IsTrue(r.Rows.Count > 0);
+
         }
         [TestMethod]
         public void Utility_T002_FileToString()
@@ -200,6 +214,19 @@ namespace GPL.UnitTests
             var Result = Utility.GetDataSetFromJson(json);
 
             Assert.IsInstanceOfType(Result, typeof(DataSet));
+        }
+
+        [TestMethod]
+        public void Utility_T008_GetMapping()
+        {
+            var Result = Utility.GetColumnsNamesFromSQLTable(SQL_SQLSERVER_LOCALDB_CONNECTIONSTRING, @"Northwind", @"dbo", @"Customers");
+
+            foreach (var i in Result)
+            {
+                Assert.IsInstanceOfType(i, typeof(string));
+            }
+
+            Assert.IsInstanceOfType(Result, typeof(IEnumerable<string>));
         }
 
         [TestMethod]

@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -121,15 +122,70 @@ namespace GPL
         #endregion HttpWebRequest
 
         #region Microsoft SQL Operations
+
         /// <summary>
-        /// Check if a SQL tables exist in the specified database.
+        /// Get a IEnumerable<string> of the Columns names from a SQL table, don't use brackets [].
         /// </summary>
-        /// <param name="connectString">The connect string.</param>
-        /// <param name="database">The database.</param>
-        /// <param name="tableSchema">The table schema.</param>
-        /// <param name="tableName">Name of the table.</param>
+        /// <param name="connectionString">The SQL connection string</param>
+        /// <param name="tableCatalog">The name of the data base</param>
+        /// <param name="tableSchema">The name of the table schema example dbo.</param>
+        /// <param name="tableName">The name of the table.</param>
         /// <returns></returns>
-        public static bool TableExist(string connectString, string database, string tableSchema, string tableName)
+        public static IEnumerable<string> GetColumnsNamesFromSQLTable(string connectionString, string tableCatalog, string tableSchema, string tableName)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText =
+                    @"SELECT COLUMN_NAME
+                      FROM INFORMATION_SCHEMA.COLUMNS
+                      WHERE
+                      TABLE_CATALOG = @TABLE_CATALOG
+                      AND TABLE_SCHEMA = @TABLE_SCHEMA
+                      AND TABLE_NAME = @TABLE_NAME";
+
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.AddWithValue("@TABLE_CATALOG", tableCatalog);
+                command.Parameters.AddWithValue("@TABLE_SCHEMA", tableSchema);
+                command.Parameters.AddWithValue("@TABLE_NAME", tableName);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return (string)reader["COLUMN_NAME"];
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<string> GetColumnsNamesFromDelimitedFile(string fileFullpathName, string delimiter = ",", bool hasFieldsEnclosedInQuotes = true)
+        {
+            DataTable DelimitedData = new DataTable();
+
+            using (TextFieldParser DelimitedReader = new TextFieldParser(fileFullpathName))
+            {
+                DelimitedReader.SetDelimiters(new string[] { delimiter });
+                DelimitedReader.HasFieldsEnclosedInQuotes = hasFieldsEnclosedInQuotes;
+                //read column names
+                return DelimitedReader.ReadFields().ToList<string>();
+
+            }
+        }
+
+
+
+            /// <summary>
+            /// Check if a SQL tables exist in the specified database.
+            /// </summary>
+            /// <param name="connectString">The connect string.</param>
+            /// <param name="database">The database.</param>
+            /// <param name="tableSchema">The table schema.</param>
+            /// <param name="tableName">Name of the table.</param>
+            /// <returns></returns>
+            public static bool TableExist(string connectString, string database, string tableSchema, string tableName)
         {
             using (var dbh = new DBHelper(false))
             {
@@ -155,7 +211,7 @@ namespace GPL
             //return System.Reflection.Assembly.GetEntryAssembly().Location;
             return System.Reflection.Assembly.GetExecutingAssembly().Location;
         }
-        
+
         /// <summary>
         /// Sends the message email.
         /// </summary>
@@ -734,6 +790,7 @@ where TException : Exception
         /// <param name="textQualifier">The text qualifier.</param>
         /// <param name="escapeCharacter">The escape character.</param>
         /// <returns></returns>
+        [Obsolete("GetDataTableFromDelimitedFile is deprecated, please use the new GetDataTableFromDelimitedFile that use the TextFieldParser instead.", true)]
         public static DataTable GetDataTableFromDelimitedFile(string filePath, bool skipEmptyRows, bool hasHeaderRecord, char? delimiter = null, char? textQualifier = null, char? escapeCharacter = null)
         {
             using (GenericParserAdapter parser = new GenericParserAdapter())
@@ -795,7 +852,6 @@ where TException : Exception
             }
             return DelimitedData;
         }
-
 
         /// <summary>
         /// Convert a json string to a DataSet
@@ -1163,8 +1219,8 @@ where TException : Exception
             proc.StartInfo = procStartInfo;
             proc.Start();
 
-            if (waitForExit==null)
-            proc.WaitForExit();
+            if (waitForExit == null)
+                proc.WaitForExit();
             else
                 proc.WaitForExit((int)waitForExit);
 
