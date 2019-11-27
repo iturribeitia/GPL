@@ -105,7 +105,7 @@ namespace GPL.UnitTests
             var r = Utility.FileToString(a);
             Assert.IsInstanceOfType(r, typeof(string));
             Assert.IsNotNull(r);
-            Assert.AreEqual(228, r.Length);
+            Assert.AreEqual(325, r.Length);
 
         }
 
@@ -212,6 +212,10 @@ namespace GPL.UnitTests
             string json = System.IO.File.ReadAllText(a);
 
             var Result = Utility.GetDataSetFromJson(json);
+           
+            Result = Utility.GetDataSetFromJson(json,true);
+           
+            Result = Utility.GetDataSetFromJson(json,true, "RootTest");
 
             Assert.IsInstanceOfType(Result, typeof(DataSet));
         }

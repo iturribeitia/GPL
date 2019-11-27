@@ -857,13 +857,26 @@ where TException : Exception
         /// Convert a json string to a DataSet
         /// </summary>
         /// <param name="jsonMessage">The json message</param>
+        /// <param name="createRootNode">Create a root node</param>
+        /// <param name="rootNodeName">Name of the root node</param>
         /// <returns>A DataSet with the data from the json message</returns>
-        public static DataSet GetDataSetFromJson(string jsonMessage)
+        public static DataSet GetDataSetFromJson(string jsonMessage, bool createRootNode = false, string rootNodeName = "root")
         {
+            // If you get errors see It to understand.
+            // https://stackoverflow.com/questions/57990303/xmlnodeconverter-can-only-convert-json-that-begins-with-an-object-path-line
+
+            if (createRootNode)
+                jsonMessage = "{\"" + rootNodeName + "\":" + jsonMessage + "}";
+
             /* https://blogs.msdn.microsoft.com/dilkushp/2013/10/31/easiest-way-of-loading-json-data-in-sql-using-c/ */
-            XmlDocument xml = JsonConvert.DeserializeXmlNode(jsonMessage);
-            DataSet ds = new DataSet("Json Data");
+
+
+            XmlDocument xml = createRootNode ? JsonConvert.DeserializeXmlNode(jsonMessage, rootNodeName) : JsonConvert.DeserializeXmlNode(jsonMessage);
+
+            DataSet ds = new DataSet("DataSetFromJson");
+
             XmlReader xr = new XmlNodeReader(xml);
+
             ds.ReadXml(xr);
 
             return ds;
