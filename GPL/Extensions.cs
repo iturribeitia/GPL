@@ -1036,38 +1036,38 @@ namespace GPL
                 switch (dataTable.Columns[i].DataType.ToString().ToUpper())
                 {
                     case "SYSTEM.INT16":
-                        sql.Append(" smallint");
+                        sql.Append(" [smallint]");
                         isNumeric = true;
                         break;
                     case "SYSTEM.INT32":
-                        sql.Append(" int");
+                        sql.Append(" [int]");
                         isNumeric = true;
                         break;
                     case "SYSTEM.INT64":
-                        sql.Append(" bigint");
+                        sql.Append(" [bigint]");
                         isNumeric = true;
                         break;
                     case "SYSTEM.DATETIME":
-                        sql.Append(" datetime");
+                        sql.Append(" [datetime]");
                         usesColumnDefault = false;
                         break;
                     case "SYSTEM.STRING":
-                        sql.AppendFormat(" nvarchar({0})", dataTable.Columns[i].MaxLength.Equals(-1) ? "MAX" : dataTable.Columns[i].MaxLength.ToString());
+                        sql.AppendFormat(" [nvarchar]({0})", dataTable.Columns[i].MaxLength.Equals(-1) ? "MAX" : dataTable.Columns[i].MaxLength.ToString());
                         break;
                     case "SYSTEM.SINGLE":
-                        sql.Append(" single");
+                        sql.Append(" [single]");
                         isNumeric = true;
                         break;
                     case "SYSTEM.DOUBLE":
-                        sql.Append(" double");
+                        sql.Append(" [double]");
                         isNumeric = true;
                         break;
                     case "SYSTEM.DECIMAL":
-                        sql.AppendFormat(" decimal(18, 6)");
+                        sql.AppendFormat(" [decimal](18, 6)");
                         isNumeric = true;
                         break;
                     default:
-                        sql.AppendFormat(" nvarchar({0})", dataTable.Columns[i].MaxLength);
+                        sql.AppendFormat(" [UKNOW_REVIEW_IT]({0})", "MAX");
                         break;
                 }
 
