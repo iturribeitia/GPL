@@ -573,7 +573,7 @@ namespace GPL
                 bulkCopy.BulkCopyTimeout = bulkCopyTimeout;
                 bulkCopy.BatchSize = BulkBatchSize;
 
-                // create the mapping if it is supplied.
+                // create the mapping if it is supplied. (Caution Column mappings in SqlBulkCopy are case sensitive)
                 if (columnMapping != null && columnMapping.Count > 0)
                     foreach (var cm in columnMapping)
                     {
