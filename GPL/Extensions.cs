@@ -44,6 +44,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
@@ -77,6 +78,32 @@ namespace GPL
         }
 
         #endregion object extensions
+
+        #region type extensions
+
+        /// <summary>
+        /// Get the SqlDbType equivalent of the current type.
+        /// </summary>
+        /// <param name="type">The Type</param>
+        /// <returns>The SqlDbType equivalent</returns>
+        /// <remarks>
+        /// If the extension throw an exceptions is because this Type does not have a SqlDbType equivalent.
+        /// </remarks>
+        public static SqlDbType GetSqlDbType(this Type type)
+        {
+            // https://stackoverflow.com/questions/1574867/convert-datacolumn-datatype-to-sqldbtype
+
+            if (type == typeof(string))
+                return SqlDbType.NVarChar;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                type = Nullable.GetUnderlyingType(type);
+
+            var param = new SqlParameter("", Activator.CreateInstance(type));
+            return param.SqlDbType;
+        }
+
+        #endregion type extensions
 
         #region DirectoryInfo extensions
 
@@ -1453,9 +1480,6 @@ namespace GPL
         }
 
         #endregion ZipArchive
-
-
-
     }
 
     /// <summary>

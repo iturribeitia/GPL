@@ -212,10 +212,10 @@ namespace GPL.UnitTests
             string json = System.IO.File.ReadAllText(a);
 
             var Result = Utility.GetDataSetFromJson(json);
-           
-            Result = Utility.GetDataSetFromJson(json,true);
-           
-            Result = Utility.GetDataSetFromJson(json,true, "RootTest");
+
+            Result = Utility.GetDataSetFromJson(json, true);
+
+            Result = Utility.GetDataSetFromJson(json, true, "RootTest");
 
             Assert.IsInstanceOfType(Result, typeof(DataSet));
         }
@@ -478,6 +478,36 @@ namespace GPL.UnitTests
             RetVal = myStr.In("str1", "str2", "str3", "str4");
 
             Assert.IsTrue(RetVal);
+        }
+
+        [TestMethod]
+        public void Extensions_T011_GetSqlDbType()
+        {
+            Type TypeToTest;
+            SqlDbType TypeReturned;
+
+            TypeToTest = typeof(System.String);
+            TypeReturned = TypeToTest.GetSqlDbType();
+            Assert.IsTrue(TypeReturned.ToString() == (SqlDbType.NVarChar.ToString()));
+
+            TypeToTest = typeof(System.Int16);
+            TypeReturned = TypeToTest.GetSqlDbType();
+            Assert.IsTrue(TypeReturned.ToString() == SqlDbType.SmallInt.ToString());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.MissingMethodException), "No parameterless constructor defined for this object.")]
+        public void Extensions_T012_GetSqlDbType()
+        {
+            Type TypeToTest;
+            SqlDbType TypeReturned;
+
+            TypeToTest = typeof(System.String[]);
+
+            // If It throw the exception is because the Type is not convertible to any SqlDbType.
+            // System.MissingMethodException: 'No parameterless constructor defined for this object.'
+            TypeReturned = TypeToTest.GetSqlDbType(); 
+
         }
 
         private void CountAndWait(int count = 10, int milisecondsToWait = 5000)
