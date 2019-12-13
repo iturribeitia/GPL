@@ -490,70 +490,7 @@ namespace GPL
         #endregion
 
         #region Bulk Insert
-
-        /// <summary>
-        /// Do SqlBulkCopy of the givin DataTable
-        /// </summary>
-        /// <param name="ConnectionString">The connection string.</param>
-        /// <param name="dataTable">The dt.</param>
-        /// <param name="TableName">Name of the table.</param>
-        /// <param name="BulkBatchSize">Size of the bulk batch.</param>
-        /// <param name="columnMapping">The column mapping.</param>
-        //public static void DoSqlBulkCopy(string ConnectionString, DataTable dataTable, string TableName, int BulkBatchSize, List<SqlBulkCopyColumnMapping> columnMapping = null)
-        //{
-        //    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
-        //    {
-        //        bulkCopy.DestinationTableName = TableName;
-        //        // Set timeout to 0 to avoid timeout errors.
-        //        bulkCopy.BulkCopyTimeout = 0;
-        //        bulkCopy.BatchSize = BulkBatchSize;
-
-        //        // create the mapping if it is supplied.
-        //        if (columnMapping != null && columnMapping.Count > 0)
-        //            foreach (var cm in columnMapping)
-        //            {
-        //                bulkCopy.ColumnMappings.Add(cm);
-        //            }
-
-        //        // Write from the source to the destination.
-        //        bulkCopy.WriteToServer(dataTable);
-
-        //        bulkCopy.Close();
-        //    }
-        //}
-
-        /// <summary>
-        /// Do SqlBulkCopy of the givin IDataReader
-        /// </summary>
-        /// <param name="ConnectionString">The connection string.</param>
-        /// <param name="dataReader">The DataReader.</param>
-        /// <param name="TableName">Name of the table.</param>
-        /// <param name="BulkBatchSize">Size of the bulk batch.</param>
-        /// <param name="columnMapping">The column mapping.</param>
-        //public static void DoSqlBulkCopy(string ConnectionString, IDataReader dataReader, string TableName, int BulkBatchSize, List<SqlBulkCopyColumnMapping> columnMapping = null)
-        //{
-        //    // TODO try to use a generic parameter to avoid this overloading, look the in extension as example.
-        //    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
-        //    {
-        //        bulkCopy.DestinationTableName = TableName;
-        //        // Set timeout to 0 to avoid timeout errors.
-        //        bulkCopy.BulkCopyTimeout = 0;
-        //        bulkCopy.BatchSize = BulkBatchSize;
-
-        //        // create the mapping if it is supplied.
-        //        if (columnMapping != null && columnMapping.Count > 0)
-        //            foreach (var cm in columnMapping)
-        //            {
-        //                bulkCopy.ColumnMappings.Add(cm);
-        //            }
-
-        //        // Write from the source to the destination.
-        //        bulkCopy.WriteToServer(dataReader);
-
-        //        bulkCopy.Close();
-        //    }
-        //}
-
+        
         /// <summary>
         /// Do SqlBulkCopy of the giving DataTable
         /// </summary>
@@ -565,7 +502,6 @@ namespace GPL
         /// <param name="columnMapping">The column mapping.</param>
         public static void DoSqlBulkCopy<T>(string ConnectionString, ref T dataSource, string TableName, int bulkCopyTimeout, int BulkBatchSize, List<SqlBulkCopyColumnMapping> columnMapping = null) where T : DataTable, IDataReader
         {
-            // TODO test this with a datatable and IDataReader for the parameter dataSource and replace It in GPL project.
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(ConnectionString))
             {
                 bulkCopy.DestinationTableName = TableName;

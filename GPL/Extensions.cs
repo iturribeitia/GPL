@@ -1060,6 +1060,7 @@ namespace GPL
 
                 sql.AppendFormat("\n\t[{0}]", dataTable.Columns[i].ColumnName);
 
+                // TODO refactor this switch using the extension (GetSqlDbType)
                 switch (dataTable.Columns[i].DataType.ToString().ToUpper())
                 {
                     case "SYSTEM.INT16":
