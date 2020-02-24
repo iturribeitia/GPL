@@ -215,16 +215,16 @@ namespace GPL
         /// <summary>
         /// Send smtp email with attachments.
         /// </summary>
-        /// <param name="smtpHost">The name or IP address of the host used for SMTP transactions.</param>
-        /// <param name="from">The from address for this email message.</param>
         /// <param name="to">The address collection (, or ;) that contains the recipients of this email message.</param>
         /// <param name="cc">The address collection (, or ;) that contains the carbon copy (CC) recipients for this email message.</param>
         /// <param name="subject">The subject line for this email message.</param>
         /// <param name="body">The message body.</param>
         /// <param name="isHtml">a value indicating whether the mail message body is in HTML.</param>
-        /// <param name="SmtpPort">The port used for SMTP transactions.</param>
+        /// <param name="from">The from address for this email message.</param>
+        /// <param name="smtpHost">The name or IP address of the host used for SMTP transactions.</param>
+        /// <param name="smtpPort">The port used for SMTP transactions.</param>
         /// <param name="attachments">The attachment collection used to store data attached to this email message.</param>
-        public static void SendMessageEmail(string smtpHost, string from, string to, string cc, string subject, string body, bool isHtml, int SmtpPort = 25, List<Attachment> attachments = null)
+        public static void SendMessageEmail(string to, string cc, string subject, string body, bool isHtml, string from = null, string smtpHost = null, int? smtpPort = null, List<Attachment> attachments = null)
         {
             var MailMsg = new MailMessage();
 
@@ -254,16 +254,23 @@ namespace GPL
                 }
             }
 
-            MailMsg.From = new MailAddress(from);
+            // Set the from if It is not null.
+            if (from != null)
+                MailMsg.From = new MailAddress(from);
+
             MailMsg.Subject = subject;
             MailMsg.Body = body;
             MailMsg.IsBodyHtml = isHtml;
 
             var SmtpCli = new SmtpClient();
+
+            // Set the Host if It is not null
             if (!string.IsNullOrEmpty(smtpHost))
                 SmtpCli.Host = smtpHost;
 
-            SmtpCli.Port = SmtpPort;
+            // Set the port if It not null
+            if (smtpPort != null)
+                SmtpCli.Port = (int)(smtpPort);
 
             // Add the attachments to the MailMessage
             foreach (var attachment in attachments)
@@ -274,7 +281,7 @@ namespace GPL
             // Send the email.
             SmtpCli.Send(MailMsg);
         }
-
+       
         /// <summary>
         /// Upload a file to a FTP server.
         /// </summary>

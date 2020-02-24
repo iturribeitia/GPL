@@ -1048,7 +1048,8 @@ namespace GPL
 
             foreach (var col in dataTable.Columns)
             {
-                fileContent.Append(col.ToString() + ",");
+                //fileContent.Append(col.ToString() + ",");
+                fileContent.Append("\"" + col.ToString() + "\",");
             }
 
             fileContent.Replace(",", System.Environment.NewLine, fileContent.Length - 1, 1);
