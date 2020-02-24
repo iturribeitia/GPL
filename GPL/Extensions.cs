@@ -1038,6 +1038,35 @@ namespace GPL
         }
 
         /// <summary>
+        /// Export a DataTable to a csv file.
+        /// </summary>
+        /// <param name="dataTable">The dataTable object</param>
+        /// <param name="filePath">The file name full path.</param>
+        public static void WriteToCsvFile(this DataTable dataTable, string filePath)
+        {
+            StringBuilder fileContent = new StringBuilder();
+
+            foreach (var col in dataTable.Columns)
+            {
+                fileContent.Append(col.ToString() + ",");
+            }
+
+            fileContent.Replace(",", System.Environment.NewLine, fileContent.Length - 1, 1);
+
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                foreach (var column in dr.ItemArray)
+                {
+                    fileContent.Append("\"" + column.ToString() + "\",");
+                }
+
+                fileContent.Replace(",", System.Environment.NewLine, fileContent.Length - 1, 1);
+            }
+            // Creates a new file, write the contents to the file, and then closes the file. If the target file already exists, it is overwritten.
+            System.IO.File.WriteAllText(filePath, fileContent.ToString());
+        }
+
+        /// <summary>
         /// Returns a string with a SQL CREATE TABLE command for this DataTable.
         /// </summary>
         /// <param name="dataTable"></param>
