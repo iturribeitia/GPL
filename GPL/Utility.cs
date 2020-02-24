@@ -213,49 +213,66 @@ namespace GPL
         }
 
         /// <summary>
-        /// Sends the message email.
+        /// Send smtp email with attachments.
         /// </summary>
-        /// <param name="to">To.</param>
-        /// <param name="from">From.</param>
-        /// <param name="subject">The subject.</param>
-        /// <param name="body">The body.</param>
-        /// <param name="isHtml">if set to <c>true</c> [is HTML].</param>
-        /// <param name="host">The host.</param>
-        /// <param name="port">The port.</param>
-        /// <param name="numRetries">The number retries.</param>
-        /// <param name="retryTimeout">The retry timeout.</param>
-        /// <exception cref="System.ArgumentException">Argument To must be a valid email repository, please review It.</exception>
-        public static void SendMessageEmail(string to, string @from, string subject, string body, bool isHtml, string host = "", int port = 25, int numRetries = 3, int retryTimeout = 1000)
+        /// <param name="smtpHost">The name or IP address of the host used for SMTP transactions.</param>
+        /// <param name="from">The from address for this email message.</param>
+        /// <param name="to">The address collection (, or ;) that contains the recipients of this email message.</param>
+        /// <param name="cc">The address collection (, or ;) that contains the carbon copy (CC) recipients for this email message.</param>
+        /// <param name="subject">The subject line for this email message.</param>
+        /// <param name="body">The message body.</param>
+        /// <param name="isHtml">a value indicating whether the mail message body is in HTML.</param>
+        /// <param name="SmtpPort">The port used for SMTP transactions.</param>
+        /// <param name="attachments">The attachment collection used to store data attached to this email message.</param>
+        public static void SendMessageEmail(string smtpHost, string from, string to, string cc, string subject, string body, bool isHtml, int SmtpPort = 25, List<Attachment> attachments = null)
         {
-            var msg = new MailMessage();
+            var MailMsg = new MailMessage();
 
+            // Process the To.
             var splitChar = to.Contains(",") ? "," : ";";
 
-            string[] emTo = to.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string[] Emails = to.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            if (emTo.Length == 0)
+            if (Emails.Length == 0)
                 throw new ArgumentException("Argument To must be a valid email repository, please review It.");
 
-            foreach (string toAdd in emTo)
+            foreach (string EmailTo in Emails)
             {
-                msg.To.Add(toAdd);
+                MailMsg.To.Add(EmailTo);
             }
-            msg.From = new MailAddress(@from);
-            msg.Subject = subject;
-            msg.Body = body;
-            msg.IsBodyHtml = isHtml;
 
-            var client = new SmtpClient();
-            if (!string.IsNullOrEmpty(host))
-                client.Host = host;
+            // Process the Cc.
+            if (!string.IsNullOrEmpty(cc) && !string.IsNullOrWhiteSpace(cc))
+            {
+                splitChar = cc.Contains(",") ? "," : ";";
 
-            client.Port = port;
+                Emails = cc.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            //client.Send(msg);
+                foreach (string EmailCc in Emails)
+                {
+                    MailMsg.CC.Add(EmailCc);
+                }
+            }
 
-            // TODO 'RetryAction is deprecated, please use RetryMethod instead.'
+            MailMsg.From = new MailAddress(from);
+            MailMsg.Subject = subject;
+            MailMsg.Body = body;
+            MailMsg.IsBodyHtml = isHtml;
 
-            RetryAction(() => client.Send(msg), numRetries, retryTimeout);
+            var SmtpCli = new SmtpClient();
+            if (!string.IsNullOrEmpty(smtpHost))
+                SmtpCli.Host = smtpHost;
+
+            SmtpCli.Port = SmtpPort;
+
+            // Add the attachments to the MailMessage
+            foreach (var attachment in attachments)
+            {
+                MailMsg.Attachments.Add(attachment);
+            }
+
+            // Send the email.
+            SmtpCli.Send(MailMsg);
         }
 
         /// <summary>
