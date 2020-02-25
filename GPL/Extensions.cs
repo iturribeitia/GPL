@@ -1038,18 +1038,21 @@ namespace GPL
         }
 
         /// <summary>
-        /// Export a DataTable to a csv file.
+        /// Export a DataTable to a csv file. 
         /// </summary>
         /// <param name="dataTable">The dataTable object</param>
         /// <param name="filePath">The file name full path.</param>
+        /// <remarks>
+        /// RFC 4180 Common Format and MIME Type for CSV Files. (see https://www.ietf.org/rfc/rfc4180.txt)
+        /// </remarks>
         public static void WriteToCsvFile(this DataTable dataTable, string filePath)
         {
             StringBuilder fileContent = new StringBuilder();
 
             foreach (var col in dataTable.Columns)
             {
-                //fileContent.Append(col.ToString() + ",");
-                fileContent.Append("\"" + col.ToString() + "\",");
+                // Replace any double-quotes with double-double-quotes and surrounding with quotes.
+                fileContent.Append("\"" + col.ToString().Replace("\"", "\"\"") + "\",");
             }
 
             fileContent.Replace(",", System.Environment.NewLine, fileContent.Length - 1, 1);
@@ -1058,7 +1061,8 @@ namespace GPL
             {
                 foreach (var column in dr.ItemArray)
                 {
-                    fileContent.Append("\"" + column.ToString() + "\",");
+                    // Replace any double-quotes with double-double-quotes and surrounding with quotes.
+                    fileContent.Append("\"" + column.ToString().Replace("\"", "\"\"") + "\",");
                 }
 
                 fileContent.Replace(",", System.Environment.NewLine, fileContent.Length - 1, 1);
@@ -1066,6 +1070,7 @@ namespace GPL
             // Creates a new file, write the contents to the file, and then closes the file. If the target file already exists, it is overwritten.
             System.IO.File.WriteAllText(filePath, fileContent.ToString());
         }
+
 
         /// <summary>
         /// Returns a string with a SQL CREATE TABLE command for this DataTable.
