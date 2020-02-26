@@ -226,62 +226,65 @@ namespace GPL
         /// <param name="attachments">The attachment collection used to store data attached to this email message.</param>
         public static void SendMessageEmail(string to, string cc, string subject, string body, bool isHtml, string from = null, string smtpHost = null, int? smtpPort = null, List<Attachment> attachments = null)
         {
-            var MailMsg = new MailMessage();
-
-            // Process the To.
-            var splitChar = to.Contains(",") ? "," : ";";
-
-            string[] Emails = to.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-            if (Emails.Length == 0)
-                throw new ArgumentException("Argument To must be a valid email repository, please review It.");
-
-            foreach (string EmailTo in Emails)
+            using (var SmtpCli = new SmtpClient())
             {
-                MailMsg.To.Add(EmailTo);
-            }
-
-            // Process the Cc.
-            if (!string.IsNullOrEmpty(cc) && !string.IsNullOrWhiteSpace(cc))
-            {
-                splitChar = cc.Contains(",") ? "," : ";";
-
-                Emails = cc.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string EmailCc in Emails)
+                using (var MailMsg = new MailMessage())
                 {
-                    MailMsg.CC.Add(EmailCc);
+                    // Process the To.
+                    var splitChar = to.Contains(",") ? "," : ";";
+
+                    string[] Emails = to.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                    if (Emails.Length == 0)
+                        throw new ArgumentException("Argument To must be a valid email repository, please review It.");
+
+                    foreach (string EmailTo in Emails)
+                    {
+                        MailMsg.To.Add(EmailTo);
+                    }
+
+                    // Process the Cc.
+                    if (!string.IsNullOrEmpty(cc) && !string.IsNullOrWhiteSpace(cc))
+                    {
+                        splitChar = cc.Contains(",") ? "," : ";";
+
+                        Emails = cc.Trim().Split(splitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (string EmailCc in Emails)
+                        {
+                            MailMsg.CC.Add(EmailCc);
+                        }
+                    }
+
+                    // Set the from if It is not null.
+                    if (from != null)
+                        MailMsg.From = new MailAddress(from);
+
+                    MailMsg.Subject = subject;
+                    MailMsg.Body = body;
+                    MailMsg.IsBodyHtml = isHtml;
+
+
+                    // Set the Host if It is not null
+                    if (!string.IsNullOrEmpty(smtpHost))
+                        SmtpCli.Host = smtpHost;
+
+                    // Set the port if It not null
+                    if (smtpPort != null)
+                        SmtpCli.Port = (int)(smtpPort);
+
+                    // Add the attachments to the MailMessage
+                    foreach (var attachment in attachments)
+                    {
+                        MailMsg.Attachments.Add(attachment);
+                    }
+
+                    // Send the email.
+                    SmtpCli.Send(MailMsg);
                 }
             }
-
-            // Set the from if It is not null.
-            if (from != null)
-                MailMsg.From = new MailAddress(from);
-
-            MailMsg.Subject = subject;
-            MailMsg.Body = body;
-            MailMsg.IsBodyHtml = isHtml;
-
-            var SmtpCli = new SmtpClient();
-
-            // Set the Host if It is not null
-            if (!string.IsNullOrEmpty(smtpHost))
-                SmtpCli.Host = smtpHost;
-
-            // Set the port if It not null
-            if (smtpPort != null)
-                SmtpCli.Port = (int)(smtpPort);
-
-            // Add the attachments to the MailMessage
-            foreach (var attachment in attachments)
-            {
-                MailMsg.Attachments.Add(attachment);
-            }
-
-            // Send the email.
-            SmtpCli.Send(MailMsg);
         }
-       
+
         /// <summary>
         /// Upload a file to a FTP server.
         /// </summary>
