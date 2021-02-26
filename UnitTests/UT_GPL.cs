@@ -510,6 +510,38 @@ namespace GPL.UnitTests
 
         }
 
+        [TestMethod]
+        public void Extensions_T013_AbsoluteStart_AbsoluteEnd()
+        {
+            /* Test with DateTime.MinValue */
+            DateTime DateTimeForTest = DateTime.MinValue;
+
+            DateTimeForTest = DateTimeForTest.AbsoluteStart();
+
+            Assert.IsTrue(DateTimeForTest == DateTime.MinValue);
+
+            DateTimeForTest = DateTime.MinValue;
+
+            DateTimeForTest = DateTimeForTest.AbsoluteEnd();
+
+            Assert.IsTrue(DateTimeForTest == "1/1/0001 23:59:59.9999999".Parse<DateTime>());
+
+
+
+            /* Test with DateTime.MaxValue */
+            DateTimeForTest = DateTime.MaxValue;
+
+            DateTimeForTest = DateTimeForTest.AbsoluteStart();
+
+            Assert.IsTrue(DateTimeForTest == DateTime.MaxValue.Date);
+
+            DateTimeForTest = DateTime.MaxValue;
+
+            DateTimeForTest = DateTimeForTest.AbsoluteEnd();
+
+            Assert.IsTrue(DateTimeForTest == "12/31/9999 23:59:59.9999999".Parse<DateTime>());
+        }
+
         private void CountAndWait(int count = 10, int milisecondsToWait = 5000)
         {
             for (int i = 0; i < count; i++)

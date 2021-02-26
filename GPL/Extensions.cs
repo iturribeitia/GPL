@@ -39,7 +39,6 @@
 
 using GenericParsing;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -787,6 +786,28 @@ namespace GPL
         {
             //return d.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffffzzz");
             return d.ToString(@"yyyy-MM-ddTHH\:mm\:ss");
+        }
+
+        /// <summary>
+        /// Gets the 12:00:00 instance of a DateTime
+        /// </summary>
+        public static DateTime AbsoluteStart(this DateTime dateTime)
+        {
+            return dateTime.Date;
+        }
+
+        /// <summary>
+        /// Gets the 11:59:59 instance of a DateTime
+        /// </summary>
+        /// <remarks>
+        /// You must be careful to use, when it is passed to stored procedure, 
+        /// It could happen that the value will be approximated to next day, 
+        /// so use .AddMilliseconds(-3) after if you will pass this value to a SQL server.
+        /// </remarks> 
+        public static DateTime AbsoluteEnd(this DateTime dateTime)
+        {
+            //return AbsoluteStart(dateTime).AddDays(1).AddTicks(-1);
+            return dateTime.Date == DateTime.MinValue.Date ? dateTime.Date.AddDays(1).AddTicks(-1) : dateTime.Date.AddTicks(-1).AddDays(1);
         }
 
         #endregion DateTime Extensions
