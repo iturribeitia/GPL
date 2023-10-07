@@ -258,6 +258,15 @@ namespace GPL
         }
 
         /// <summary>
+        /// remove duplicated characters
+        /// </summary>
+        /// <param name="s">string to remove the duplicated</param>
+        public static string RemoveDuplicatedchars(this string s)
+        {
+            return new string(s.ToCharArray().Distinct().ToArray());
+        }
+
+        /// <summary>
         /// Get From the right the specified value.
         /// </summary>
         /// <param name="sValue">The value.</param>
