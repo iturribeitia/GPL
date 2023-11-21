@@ -175,17 +175,15 @@ namespace GPL
             }
         }
 
-
-
-            /// <summary>
-            /// Check if a SQL tables exist in the specified database.
-            /// </summary>
-            /// <param name="connectString">The connect string.</param>
-            /// <param name="database">The database.</param>
-            /// <param name="tableSchema">The table schema.</param>
-            /// <param name="tableName">Name of the table.</param>
-            /// <returns></returns>
-            public static bool TableExist(string connectString, string database, string tableSchema, string tableName)
+        /// <summary>
+        /// Check if a SQL tables exist in the specified database.
+        /// </summary>
+        /// <param name="connectString">The connect string.</param>
+        /// <param name="database">The database.</param>
+        /// <param name="tableSchema">The table schema.</param>
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns></returns>
+        public static bool TableExist(string connectString, string database, string tableSchema, string tableName)
         {
             using (var dbh = new DBHelper(false))
             {
@@ -200,6 +198,61 @@ namespace GPL
                 return dbh.ExecuteScalar(ct, CommandType.Text, ConnectionState.Closed).ToString().Parse<bool>();
             }
         }
+
+        #region dynamic sql methods
+
+        /// <summary>
+        ///  Executes the sp_executesql stored procedure.
+        /// </summary>
+        /// <param name="connectionString">The connection String</param>
+        /// <param name="commandText">The Command text to execute.</param>
+        /// <param name="parameters">The Parameters needed.</param>
+        /// <returns>Returns rows affected.</returns>
+        public static int ExecuteNonQueryDynamicSql(string connectionString, string commandText, List<SqlParameter> parameters = null)
+        {
+            int rowsAffected = 0;
+
+            if (parameters == null) parameters = new List<SqlParameter>();
+
+            // Your dynamic SQL query with the OUTPUT clause
+            string DynamicSql = commandText + @"; SELECT @RowsAffected = @@ROWCOUNT";
+
+            // Add the Output @RowsAffected parameters to the end of the list.
+            parameters.Add(new SqlParameter("@RowsAffected", SqlDbType.Int) { Direction = ParameterDirection.Output });
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("sp_executesql", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add the @stmt parameter.
+                    command.Parameters.Add(new SqlParameter("@stmt", SqlDbType.NVarChar) { Value = DynamicSql });
+
+                    // Add user-provided parameters
+                    command.Parameters.Add(new SqlParameter("@params", SqlDbType.NVarChar)
+                    {
+                        //Value = string.Join(",", parameters.Select(p => $"{p.ParameterName} {p.SqlDbType.ToString()}{(p.SqlDbType == SqlDbType.NVarChar ? $"({p.Size})" : "")}")) + " OUT"
+                        Value = string.Join(",", parameters.Select(p => $"{p.ParameterName} {p.SqlDbType.ToString()}{(p.SqlDbType == SqlDbType.NVarChar || p.SqlDbType == SqlDbType.VarChar || p.SqlDbType == SqlDbType.VarBinary || p.SqlDbType == SqlDbType.Char || p.SqlDbType == SqlDbType.Binary || p.SqlDbType == SqlDbType.NChar ? $"({p.Size})" : "")}")) + " OUT"
+                    }
+                    );
+
+                    command.Parameters.AddRange(parameters.ToArray());
+
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+
+                    // Get the value of @@ROWCOUNT
+                    rowsAffected = Convert.ToInt32(command.Parameters["@RowsAffected"].Value);
+                }
+            }
+
+            return rowsAffected;
+        }
+
+        #endregion dynamic sql methods
+
         #endregion Microsoft SQL Operations
 
         /// <summary>
@@ -627,7 +680,7 @@ where TException : Exception
         private static extern int FindMimeFromData(IntPtr pBC,
             [MarshalAs(UnmanagedType.LPWStr)] string pwzUrl,
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeParamIndex = 3)] byte[] pBuffer,
-            int cbSize, [MarshalAs(UnmanagedType.LPWStr)]  string pwzMimeProposed,
+            int cbSize, [MarshalAs(UnmanagedType.LPWStr)] string pwzMimeProposed,
             int dwMimeFlags, out IntPtr ppwzMimeOut, int dwReserved);
 
         /// <summary>
