@@ -262,8 +262,9 @@ namespace GPL.UnitTests
         [TestMethod]
         public void Extensions_T002_DirectoryInfo_CreateDirectory()
         {
-            string a = @"C:\temp\dir1";
-            string b = @"C:\temp\dir1\dir2\dir3";
+            string TempPath = System.IO.Path.GetTempPath();
+            string a = TempPath + @"\dir1";
+            string b = TempPath + @"\dir1\dir2\dir3";
 
             //string a = @"\\App.Diablo.Corelogic.com\LTL\TEST\RPM Direct";
             //string b = @"\\App.Diablo.Corelogic.com\LTL\TEST\RPM Direct\AKZA-7SNEPC\CountFiles";
