@@ -210,12 +210,20 @@ namespace GPL
         /// <returns>Returns rows affected.</returns>
         public static int ExecuteNonQueryDynamicSql(string connectionString, string commandText, List<SqlParameter> parameters = null)
         {
+            //logger.Debug($"commandText = {commandText}");
+
+            //foreach (var p in parameters ?? Enumerable.Empty<SqlParameter>())
+            //{
+            //    logger.Debug($"ParameterName = {p.ParameterName}");
+            //    logger.Debug($"ParameterValue = {p.Value}");
+            //}
+
             int rowsAffected = 0;
 
             if (parameters == null) parameters = new List<SqlParameter>();
 
             // Your dynamic SQL query with the OUTPUT clause
-            string DynamicSql = commandText + @"; SELECT @RowsAffected = @@ROWCOUNT";
+            string DynamicSql = (commandText + ";" + Environment.NewLine + @"SELECT @RowsAffected = @@ROWCOUNT;").Replace(";;", ";");
 
             // Add the Output @RowsAffected parameters to the end of the list.
             parameters.Add(new SqlParameter("@RowsAffected", SqlDbType.Int) { Direction = ParameterDirection.Output });
@@ -225,6 +233,7 @@ namespace GPL
                 using (SqlCommand command = new SqlCommand("sp_executesql", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Clear();
 
                     // Add the @stmt parameter.
                     command.Parameters.Add(new SqlParameter("@stmt", SqlDbType.NVarChar) { Value = DynamicSql });
@@ -239,12 +248,17 @@ namespace GPL
 
                     command.Parameters.AddRange(parameters.ToArray());
 
-
-                    connection.Open();
+                    // open the connection and ExecuteNonQuery.
+                    if (connection.State != ConnectionState.Open)
+                    {
+                        connection.Open();
+                    }
                     command.ExecuteNonQuery();
 
                     // Get the value of @@ROWCOUNT
                     rowsAffected = Convert.ToInt32(command.Parameters["@RowsAffected"].Value);
+
+                    command.Parameters.Clear();
                 }
             }
 
